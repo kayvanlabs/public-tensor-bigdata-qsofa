@@ -19,3 +19,6 @@ Brett W. Bader, Tamara G. Kolda and others.
 MATLAB Tensor Toolbox Version 3.1,  
 Available online, June 2019.  
 URL: https://gitlab.com/tensors/tensor_toolbox. 
+
+Sedghamiz. H, "Matlab Implementation of Pan Tompkins ECG QRS detector.", March 2014. https://www.researchgate.net/publication/313673153_Matlab_Implementation_of_Pan_Tompkins_ECG_QRS_detect  
+Hooman Sedghamiz (2023). Complete Pan Tompkins Implementation ECG QRS detector (https://www.mathworks.com/matlabcentral/fileexchange/45840-complete-pan-tompkins-implementation-ecg-qrs-detector), MATLAB Central File Exchange. Retrieved June 19, 2023.

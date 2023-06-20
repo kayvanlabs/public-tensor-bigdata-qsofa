@@ -1,0 +1,11 @@
+{
+	"nonspecific": {
+		"base": "../Data/Processed/",
+		"extracted": "../Data/Processed/Extracted/",
+		"waveformTimes": "../Data/Processed/waveform-times-file.xlsx",
+		"encounters": "../Data/Processed/encounters.xlsx",
+		"ehr": "../Data/Processed/EHR/",
+		"noise": "../Data/Processed/Noise/",
+        "qsofa": "../Data/Processed/Modeling/qSOFA/",
+	}
+}

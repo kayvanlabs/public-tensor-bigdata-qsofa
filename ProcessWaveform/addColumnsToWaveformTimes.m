@@ -15,11 +15,8 @@ function signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes, grou
 % 
 % Language: MATLAB R2019a
 % OS: Windows 10
-% Author: Olivia ALge
+% Author: Olivia Alge
 % Date: April 2020
-
-    % Load necessary paths
-    addpath('../DOD/matlab/process_DOD_data/')
 
     extractedDir = configFile.extracted;
     durationFile = 'nonspecificWaveformDurations.mat';

@@ -24,7 +24,6 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
 
     outcomeName = 'qSOFA';
     signalsUsing = 'ECG_Art';
-    groupChar = 'nonspecific';
     
     % ECG Sampling rate is 240 Hz, Art Line is 120 Hz
     
@@ -142,8 +141,8 @@ function [experimentName] = generateDataAndExperimentName(signalsUsing, gapDur, 
 end
 
 function runFindQsofaScript(configFile)
-    baseLocation = configFile.nonspecific.ehr;
-    saveLocation = configFile.nonspecific.qsofa;
+    baseLocation = configFile.ehr;
+    saveLocation = configFile.qsofa;
     for i = 14:18  % year files 14-18
         % Load EHR and Flowsheet data
         iEhrFile = strcat('ehrStruct_20', num2str(i), '.mat');

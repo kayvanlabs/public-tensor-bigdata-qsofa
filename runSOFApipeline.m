@@ -36,6 +36,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     runFindQsofaScript(configFile);
     
     %% If needed, process EHR
+    addpath('ehr')
     processEhr(configFile.ehr);
     
     %% Generate Signals Information
@@ -54,9 +55,8 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     addpath('qsofaScore');
     
     %% Create the status variable
-    allSignalsInfo = findOutcomesForQSOFA(configFile.nonspecific.qsofa, ...
-                                      configFile.nonspecific.noise, ...
-                                      signalsInfo, hours(0), signalDuration);
+    allSignalsInfo = findOutcomesForQSOFA(configFile.qsofa, configFile.noise, ...
+                                          signalsInfo, hours(0), signalDuration);
     a = [];
     b = [];
     for i = 1:size(allSignalsInfo)

@@ -20,19 +20,9 @@ function signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes, grou
 
     % Load necessary paths
     addpath('../DOD/matlab/process_DOD_data/')
-    addpath('../GeneralProcessing');
-    
-    switch groupChar
-        case 'pediatric'
-            extractedDir = configFile.pediatric.extracted;
-            durationFile = 'waveformDurations.mat';
-        case 'troponin'
-            extractedDir = configFile.troponin.extracted;
-            durationFile = 'troponinWaveformDurations.mat';
-        case 'nonspecific'
-            extractedDir = configFile.nonspecific.extracted;
-            durationFile = 'nonspecificWaveformDurations.mat';
-    end
+
+    extractedDir = configFile.extracted;
+    durationFile = 'nonspecificWaveformDurations.mat';
     
     % Initialize output
     Duration = zeros(size(waveformTimes, 1), 1);

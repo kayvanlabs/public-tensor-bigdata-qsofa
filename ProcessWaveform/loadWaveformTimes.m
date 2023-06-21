@@ -1,4 +1,4 @@
-function waveformTimes = loadWaveformTimes(timesFileLocation, groupChar)
+function waveformTimes = loadWaveformTimes(timesFileLocation)
 % Load the waveform times table
 %
 % DESCRIPTION
@@ -24,7 +24,7 @@ function waveformTimes = loadWaveformTimes(timesFileLocation, groupChar)
 % Matlab 2020b, Windows 10
 
     % Set options
-    opts = setOpts(groupChar);
+    opts = setOpts();
 
     % Import the data
     waveformTimes = setTimeZone(readtable(timesFileLocation, opts, ...
@@ -35,13 +35,13 @@ function waveformTimes = loadWaveformTimes(timesFileLocation, groupChar)
     waveformTimes(:, 'DurationStartMinusEnd') = table(DurationStartMinusEnd);
 end
 
-function optStruct = setOpts(groupChar)
+function optStruct = setOpts()
 % Sets up structure 'optStruct' of options for reading in the excel file
 % REQUIRES
 % assignDataRange()
     nVariables = 6;
     optStruct = spreadsheetImportOptions("NumVariables", nVariables);
-    optStruct.DataRange = assignDataRange(groupChar);
+    optStruct.DataRange = "A2:F5550";  % columns of spreadsheet
     
     optStruct.VariableTypes = ["double", "char", "char", ...
                                "char", "string", "string"];
@@ -51,20 +51,6 @@ function optStruct = setOpts(groupChar)
     % Handle issues with whitespace
     optStruct = setvaropts(optStruct, [3, 5, 6], "WhitespaceRule", "preserve");
     optStruct = setvaropts(optStruct, [3, 5, 6], "EmptyFieldRule", "auto");
-end
-
-function dataRange = assignDataRange(groupChar)
-% create string 'dataRange' based on the group in 'groupChar'
-    switch groupChar
-        case 'pediatric'
-            dataRange = "A2:F342";
-        case 'troponin'
-            dataRange = "A2:F978";
-        case 'nonspecific'
-            dataRange = "A2:F5550";
-        otherwise
-            error('Please select a valid group (pediatric, troponin, or nonspecific)')
-    end
 end
 
 function waveformTimesOut = setTimeZone(waveformTimesIn)

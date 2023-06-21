@@ -37,15 +37,14 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     runFindQsofaScript(configFile);
     
     %% If needed, process EHR
-    processEhrViaDod(configFile.(groupChar).ehr);
+    processEhrViaDod(configFile.ehr);
     
     %% Generate Signals Information
-    waveformTimes = loadWaveformTimes(configFile.(groupChar).waveformTimes, ...
-                                      groupChar);
+    waveformTimes = loadWaveformTimes(configFile.waveformTimes);
     waveformTimes = waveformTimes(selectDesiredSignals(waveformTimes), :);
     
     % Select signals at or below discrepancy threshold
-    signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes, groupChar);
+    signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes);
     colName = 'AbsVal_TimeStampDur_minus_Duration';
     signalsInfo = selectSigsBelowThresh(signalsInfo, colName, discrepDuration);
     
@@ -77,16 +76,16 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     %% Integrate EHR data
     gapStr = strcat('signalsInfo_gap_', num2str(hours(gapDuration)), '_hr_');
     sigStr = strcat('signal_', num2str(minutes(signalDuration)), '_min');
-    fFile = fullfile(configFile.(groupChar).(lower(outcomeName)), ...
+    fFile = fullfile(configFile.(lower(outcomeName)), ...
                      strcat(gapStr, sigStr, '.mat'));
-    tempEhrFile = fullfile(configFile.(groupChar).ehr, 'temporalEHR.mat');
+    tempEhrFile = fullfile(configFile.ehr, 'temporalEHR.mat');
     integrateTemporalEhrFeatures(fFile,tempEhrFile, gapDuration, signalDuration, nWindows);
     [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, signalsInfo, signalDuration);
     
     %% Get filtered Signals
     [~, filteredEcgTable, ~] = getQrsAndFilteredEcg(rawEcgTable);
     filteredAbpTable = getFilteredArt(rawAbpTable);
-    eFile = fullfile(configFile.(groupChar).(lower(outcomeName)), ...
+    eFile = fullfile(configFile.(lower(outcomeName)), ...
                      strcat(gapStr, sigStr, '_temporalEHR.mat'));
     tempEhr = load(eFile);
     filteredAbpWithEhr = appendEhrData(filteredAbpTable, tempEhr.features);

@@ -36,7 +36,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     runFindQsofaScript(configFile);
     
     %% If needed, process EHR
-    processEhrViaDod(configFile.ehr);
+    processEhr(configFile.ehr);
     
     %% Generate Signals Information
     waveformTimes = loadWaveformTimes(configFile.waveformTimes);

@@ -8,7 +8,7 @@
 % Modified by: Olivia Pifer Alge
 % May 2022
 
-function processEhrViaDod(EHR_path)
+function processEhr(EHR_path)
     addpath('../DOD/matlab/process_DOD_data/ehr_data/');
     addpath('../DOD/matlab/DataStructures/Interval Trees/');
     %set path to EHR data

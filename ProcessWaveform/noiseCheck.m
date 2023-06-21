@@ -19,7 +19,7 @@ function output = noiseCheck(configFile, signalsInfo)
 % Olivia Pifer Alge
 % November 2021
     output = [];
-    addpath(configFile.noise.dir)
+    addpath('noiseDetectionECG')
     diffCol = 'AbsVal_TimeStampDur_minus_Duration';
     percent_not_noisy = zeros(size(output, 1), 1);
     % Don't bother checking samples with discrepancies greater than an hour
@@ -35,7 +35,7 @@ function output = noiseCheck(configFile, signalsInfo)
                            signalsInfo{i, 'Sepsis_EncID'}, '_', ...
                            sigName, '_', ...
                            iWaveId);
-        iFilePath = fullfile(configFile.nonspecific.extracted, ...
+        iFilePath = fullfile(configFile.extracted, ...
                              append(iFileName, '.csv'));
         
         try 
@@ -54,8 +54,7 @@ function output = noiseCheck(configFile, signalsInfo)
             noisy = -1;
         end
         disp(['Iteration ', num2str(i)]);
-        tempTable = table(signalsInfo(1:i, 'Sepsis_ID'), signalsInfo(1:i, 'WaveID'), percent_not_noisy');
-        save('test_percent_not_noisy.mat', 'percent_not_noisy');
+        save('percent_not_noisy.mat', 'percent_not_noisy');
         save(['noisy_nonspecific/noisy_', num2str(i), '.mat'], 'noisy', '-v7.3')
     end
     output.percent_not_noisy = percent_not_noisy;

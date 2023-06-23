@@ -67,7 +67,6 @@ function [foundPositiveSignals, foundNegativeSignals] = findOutcomesForQSOFA(qso
     if ~strcmp(qsofaTable.Properties.VariableNames{2}, encCol)
         qsofaTable = changeColNameWithIndex(qsofaTable, 2, encCol);
     end
-
     
     %% Find which IDs are marked in both WaveformTimes and qSOFA
     uniqueIdsQsofa = unique(qsofaTable(:, [idCol, encCol]));

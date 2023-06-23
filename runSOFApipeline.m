@@ -67,6 +67,8 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     allSignalsInfo.Sepsis_EncID = a;
     allSignalsInfo.Status = b;
     signalsInfo = allSignalsInfo;
+    signalsInfo.Properties.VariableNames{1} = 'Sepsis_ID';
+    signalsInfo.Properties.VariableNames{2} = 'EventTime';
     
     %% Generate positive and negative outcomes
     [posCondition, negCondition] = createQsofaCriteria1to2(signalsInfo, gapDuration, signalDuration);

@@ -14,8 +14,6 @@ function [posCondition, negCondition] = createQsofaCriteria1to2(allSignalsInfo, 
     xTotalCol = strcat(totalCol, '_', num2str(hours(gapDur)), '_hrs');
     xTimeCol = strcat(timeCol, '_', num2str(hours(gapDur)), '_hrs');
     xOutcomeCol = strcat(outcomeCol, '_', num2str(hours(gapDur)), '_hrs');
-
-    isequalwithequalnans
     
     ids = unique(allSignalsInfo(:, {idCol, encCol}));  % 591 unique encounters (with signal)
     
@@ -53,11 +51,13 @@ function [posCondition, negCondition] = createQsofaCriteria1to2(allSignalsInfo, 
                 if any(iRows{iRowsWithSignalForQ1, timeCol} == predictionSignalEnd)
                     matchedIdx = iRows{iRowsWithSignalForQ1, timeCol} == predictionSignalEnd;
                     iSignal = iRows(iRowsWithSignalForQ1(matchedIdx), :);
-                    iSignal.(xTotalCol) = repelem(iRows{firstQsofa2, totalCol}, size(iSignal, 1))';
-                    iSignal.(xTimeCol) = repelem(iRows{firstQsofa2, timeCol}, size(iSignal, 1))';
-                    iSignal.(xOutcomeCol) = repelem(iRows{firstQsofa2, outcomeCol}, size(iSignal, 1))';
-                    iSignal.diff = repelem(minutes(0), size(iSignal, 1))';
-                    posCondition = [posCondition; iSignal];
+                    if isequal(unique(iSignal.WaveType), ["Art Line"; "EKG II"])
+                        iSignal.(xTotalCol) = repelem(iRows{firstQsofa2, totalCol}, size(iSignal, 1))';
+                        iSignal.(xTimeCol) = repelem(iRows{firstQsofa2, timeCol}, size(iSignal, 1))';
+                        iSignal.(xOutcomeCol) = repelem(iRows{firstQsofa2, outcomeCol}, size(iSignal, 1))';
+                        iSignal.diff = repelem(minutes(0), size(iSignal, 1))';
+                        posCondition = [posCondition; iSignal];
+                    end
                 else
                     % Find closest possible match
                     [timeDiff, idx] = min(abs(predictionSignalEnd - iRows{iRowsWithSignalForQ1, timeCol}));
@@ -66,13 +66,15 @@ function [posCondition, negCondition] = createQsofaCriteria1to2(allSignalsInfo, 
                     if (timeDiff < (gapDur - bufferXearly)) && (timeDiff < (gapDur + bufferXlate))
                         if (iRows{idx, sigStartCol} <= predictionSignalStart) && (iRows{idx, sigEndCol} >= predictionSignalEnd)
                             iSignal = iRows(idx:idx+1, :);
-                            iSignal.(xTotalCol) = repelem(iRows{firstQsofa2, totalCol}, size(iSignal, 1))';
-                            iSignal.(xTimeCol) = repelem(iRows{firstQsofa2, timeCol}, size(iSignal, 1))';
-                            iSignal.(xOutcomeCol) = repelem(iRows{firstQsofa2, outcomeCol}, size(iSignal, 1))';
-                            iSignal.predictionSignalStart = repelem(predictionSignalStart, size(iSignal, 1))';
-                            iSignal.predictionSignalEnd = repelem(predictionSignalEnd, size(iSignal, 1))';
-                            iSignal.diff = repelem(timeDiff, size(iSignal, 1))';
-                            posCondition = [posCondition; iSignal];
+                            if isequal(unique(iSignal.WaveType), ["Art Line"; "EKG II"])
+                                iSignal.(xTotalCol) = repelem(iRows{firstQsofa2, totalCol}, size(iSignal, 1))';
+                                iSignal.(xTimeCol) = repelem(iRows{firstQsofa2, timeCol}, size(iSignal, 1))';
+                                iSignal.(xOutcomeCol) = repelem(iRows{firstQsofa2, outcomeCol}, size(iSignal, 1))';
+                                iSignal.predictionSignalStart = repelem(predictionSignalStart, size(iSignal, 1))';
+                                iSignal.predictionSignalEnd = repelem(predictionSignalEnd, size(iSignal, 1))';
+                                iSignal.diff = repelem(timeDiff, size(iSignal, 1))';
+                                posCondition = [posCondition; iSignal];
+                            end
                         end
                     end
                 end
@@ -88,13 +90,15 @@ function [posCondition, negCondition] = createQsofaCriteria1to2(allSignalsInfo, 
                                           iRows{:, timeCol} < (jPossibleStart.(timeCol) + gapDur + bufferXlate));
                 if any(jPossibleEnds)
                     iSignal = iRows(j:j + 1, :);
-                    jEnd = jPossibleEnds(1);
-                    iSignal.(xTotalCol) = repelem(iRows{jEnd, totalCol}, size(iSignal, 1))';
-                    iSignal.(xTimeCol) = repelem(iRows{jEnd, timeCol}, size(iSignal, 1))';
-                    iSignal.(xOutcomeCol) = repelem(iRows{jEnd, outcomeCol}, size(iSignal, 1))';
-                    iSignal.diff = iSignal.(xTimeCol) - iSignal.(timeCol);
-                    negCondition = [negCondition; iSignal]; 
-                    break
+                    if isequal(unique(iSignal.WaveType), ["Art Line"; "EKG II"])
+                        jEnd = jPossibleEnds(1);
+                        iSignal.(xTotalCol) = repelem(iRows{jEnd, totalCol}, size(iSignal, 1))';
+                        iSignal.(xTimeCol) = repelem(iRows{jEnd, timeCol}, size(iSignal, 1))';
+                        iSignal.(xOutcomeCol) = repelem(iRows{jEnd, outcomeCol}, size(iSignal, 1))';
+                        iSignal.diff = iSignal.(xTimeCol) - iSignal.(timeCol);
+                        negCondition = [negCondition; iSignal];
+                        break
+                    end
                 end                
             end
         end

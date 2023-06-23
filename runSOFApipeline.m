@@ -59,13 +59,16 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
                                           signalsInfo, hours(0), signalDuration);
     a = [];
     b = [];
+    c = [];
     for i = 1:size(allSignalsInfo)
         [enc, stat] = getEncAndStat(allSignalsInfo{i, 'Sepsis_EncID'});
         a = [a; enc];
         b = [b; stat];
+        c = [c; string(strrep(num2str(signalsInfo{1, 'qSofaEncoding'}), ' ', ''))];
     end
     allSignalsInfo.Sepsis_EncID = a;
     allSignalsInfo.Status = b;
+    allSignalsInfo.EncodedOutcome = c;
     signalsInfo = allSignalsInfo;
     signalsInfo.Properties.VariableNames{1} = 'Sepsis_ID';
     signalsInfo.Properties.VariableNames{2} = 'EventTime';
@@ -80,6 +83,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     fFile = fullfile(configFile.(lower(outcomeName)), ...
                      strcat(gapStr, sigStr, '.mat'));
     tempEhrFile = fullfile(configFile.ehr, 'temporalEHR.mat');
+    save(fFile, 'signalsInfo')
     integrateTemporalEhrFeatures(fFile,tempEhrFile, gapDuration, signalDuration, nWindows);
     [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, signalsInfo, signalDuration);
     

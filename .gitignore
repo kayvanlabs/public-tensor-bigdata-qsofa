@@ -19,3 +19,6 @@
 *.jpg
 *.fig
 *.png
+
+# Testing
+arterial/code_tests/*

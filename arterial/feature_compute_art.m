@@ -26,6 +26,9 @@ function [features,names] = ...
 
 % Time between consecutive first peaks 'p1'
 dt = diff(primary);
+if isempty(dt)
+    dt = nan;
+end
 mean_dt_p1p1 = mean(dt) / smpRate;
 med_dt_p1p1 = median(dt) / smpRate;
 std_dt_p1p1 = std(dt) / smpRate;
@@ -35,6 +38,9 @@ min_dt_p1p1 = min(dt) / smpRate;
 % Time between first peak (p1) and secondary peak (p2) in cycle
 n = length(secondary);
 dt = secondary - primary(1:n);
+if isempty(dt)
+    dt = nan;
+end
 mean_dt_p1p2 = mean(dt) / smpRate;
 med_dt_p1p2 = median(dt) / smpRate;
 std_dt_p1p2 = std(dt) / smpRate;
@@ -43,6 +49,9 @@ min_dt_p1p2 = min(dt) / smpRate;
 
 % Relative amplitude between consecutive primary peaks (p1)
 ra = x(primary(1:end-1)) ./ x(primary(2:end));
+if isempty(ra)
+    ra = nan;
+end
 mean_ra_p1p1 = mean(ra);
 med_ra_p1p1 = median(ra);
 std_ra_p1p1 = std(ra);
@@ -51,6 +60,9 @@ min_ra_p1p1 = min(ra);
 
 % Relative amplitude between Primary (p1) and Secondary peak (p2)
 ra = x(primary(1:n)) ./ x(secondary);
+if isempty(ra)
+    ra = nan;
+end
 mean_ra_p1p2 = mean(ra);
 med_ra_p1p2 = median(ra);
 std_ra_p1p2 = std(ra);

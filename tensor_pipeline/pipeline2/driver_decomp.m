@@ -111,7 +111,7 @@ for fold=1:num_folds
     if any(ismember(train_table.Ids, val_table.Ids))
         error('Overlap between train and validation')
     end
-    parfor decomp=1:(length(ranks)+1)
+    for decomp=1:(length(ranks)+1)
         disp('DECOMP/RANK: ' + string(decomp));
         if decomp < length(ranks)+1
             % Put in tensors

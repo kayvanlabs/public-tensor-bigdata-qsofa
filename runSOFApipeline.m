@@ -4,13 +4,6 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
 % and Art Line related to these instances, compute features from these
 % signals, and create & decompose tensors of these features.
 %
-% REQUIRES
-%   GeneralProcessing/
-%     findIdxForSignal()
-%   DOD/*
-%   BCIL-Shared/*
-%   config.json
-%
 % INPUT
 %   gapDuration: duration, gap between end of signal and start of event
 %       i.e. gapDuration = hours(6) or hours(12)

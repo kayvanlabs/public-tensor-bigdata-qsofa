@@ -79,10 +79,8 @@ function driver_tensorize(data_set, experiment_name, feature_type, array_idx)
     % These tensors will be saved to a map that has a key: string(num_windows)
     % and a value that is the data table
     %% Tensorization
-    num_periods = 0;
     disp(string(num_windows));
-    tensors = construct_tensors(data_bandpass, ...
-        params, feature_type, num_periods, num_windows, epsilons, strcmp(data_set, experiment_name));
+    tensors = construct_tensors(data_bandpass, params, feature_type, num_windows, epsilons);
     mkdir(data_path + experiment_name)
     save(char(data_path + experiment_name + "/tensors_" + string(num_windows) + ".mat"), 'tensors', '-v7.3');
     %end

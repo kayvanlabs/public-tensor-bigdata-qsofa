@@ -8,7 +8,7 @@
 %                  also loaded in from a load_... file. Fields include the
 %                  Max and Min frequency of the signal, so that the signals
 %                  period can be calculated and the sampling rate
-%       3. feature type: TS or DTCWPT
+%       3. feature type: TS or ABP
 %       4. num_periods: The number of periods of the signal represented in 
 %                       each tensor
 %       5. num_windows: the number of windows in each tensor
@@ -20,7 +20,7 @@
 %   
 %   Joshua Pickard (jpic@umich.edu)
 
-function data_table=construct_tensors(data, params, feature_type, num_periods, num_windows, epsilons, balance) %, first_1, h, f, max_level)
+function data_table=construct_tensors(data, params, feature_type, num_windows, epsilons) %, first_1, h, f, max_level)
     % To save the results to return
     data_table = table([],[],[],[],[],'VariableNames',{'Ids','EncID','Labels','Tensors','Non-Tensor-Features'});
 
@@ -30,8 +30,6 @@ function data_table=construct_tensors(data, params, feature_type, num_periods, n
     num_epsilons = length(epsilons(1,:));
     if strcmp(feature_type, "TS")
         num_features = 6;
-    elseif strcmp(feature_type, "DTCWPT")
-        num_features = 152; % DTCPWT is 19, TS is 16, I could do both but haven't yet
     elseif strcmp(feature_type, "ABP")
         num_features = 21;
         epsilons = [];
@@ -40,17 +38,8 @@ function data_table=construct_tensors(data, params, feature_type, num_periods, n
         error('Unrecognized feature type')
     end
     
-    % Calculate the period length of the signal in terms of the number of
-    % data points that are included
-    if num_periods == 0
-        signal_length = length(signals{1});
-    else
-        mean_F = (params('Max F') + params('Min F')) / 2;
-        period = 1 / mean_F;
-        samples_per_period = period * params('Sampling F');
-        signal_length = round(samples_per_period * num_periods);
-    end
-
+    signal_length = length(signals{1});
+    
     % Compute window size and overlap
     window_size = round(signal_length / num_windows);
     overlap = round(0.05 * window_size);
@@ -87,20 +76,13 @@ function data_table=construct_tensors(data, params, feature_type, num_periods, n
                     end
                     % Taut String Features
                     if strcmp(feature_type, "TS")
+                        addpath('TautString');
                         [features_TS,~,~] = feature_compute_staticTS(window_view, epsilons(signal_i,:));
                         features_TS = reshape(features_TS,[num_epsilons, num_features]);
                         features = features_TS;
-                    % DTCWPT Features
-                    elseif strcmp(feature_type, "DTCWPT")
-                        TS_signals = [];
-                        for e=1:length(epsilons(signal_i,:))
-                            ts_sig = taut_string(window_view, epsilons(signal_i, e));
-                            TS_signals = [TS_signals; ts_sig];
-                        end                    
-                        features_DTCWPT = feature_compute_staticDTCWPT_2(TS_signals);
-                        features = features_DTCWPT;
                     elseif strcmp(feature_type, "ABP")
-                        sigAttributes.sampleRate = 120;
+                        addpath('arterial');
+                        sigAttributes.sampleRate = params('Sampling F');
                         sigAttributes.signalType = 'art';
                         features = art_feature_extraction(window_view,sigAttributes,window);
                         if ~isempty(features)
@@ -112,10 +94,7 @@ function data_table=construct_tensors(data, params, feature_type, num_periods, n
                     tensor(signal_i, window, :, :) = features;    
                 end
             end
-            if num_signals == 1
-                % Squash signal dimension
-                %tensor = tensor(1,:,:,:);
-            end
+
             id = data.ID(sample);
             enc = data.EncID(sample);
             label = data.Label(sample);
@@ -133,11 +112,5 @@ function data_table=construct_tensors(data, params, feature_type, num_periods, n
             % Increment how much data we have used
             used_data = used_data + signal_length;
         end
-    end
-    if balance % This is hardcoded to the CWR data set Joshua is working with
-        baseline = (data_table.Labels == "N");
-        readd = data_table(baseline, :);
-        data_table = [data_table; readd];
-        data_table = [data_table; readd];
     end
 end

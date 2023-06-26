@@ -2,11 +2,11 @@ function [loaded_data, params, data_path, filtered]=load_qsofaArt_raw()
     data_path = './';
     
     % sampling rate
-    fsArt = 120;
+    fs = 120;
     
     % Set up parameters
     params = containers.Map;
-    params('Sampling F') = fsArt;
+    params('Sampling F') = fs;
     params('Non-Tensor Features') = false;
     params('Epsilons') = linspace(.1,2.5,5);
     

@@ -2,11 +2,11 @@ function [loaded_data, params, data_path, filtered]=load_qsofaEcg_raw(varargin)
     data_path = './';  % Input your own location here
     
     % sampling rates
-    fsEcg = 240;
+    fs = 240;
     
     % Set up parameters
     params = containers.Map;
-    params('Sampling F') = fsEcg;
+    params('Sampling F') = fs;
     params('Non-Tensor Features') = true;
     params('Epsilons') = linspace(.01,0.6,5);
     

@@ -10,8 +10,8 @@ function newData=integrateTemporalEhrFeatures(featureFile,temporalEHRFile, gapDu
 % Modified by: Olivia Pifer Alge
 % Date: January 12, 2020
 
-addpath('../DOD/matlab/DataStructures/Interval Trees/');
-addpath('../DOD/matlab/process_DOD_data/ehr_data/')
+addpath('Interval Trees/');
+addpath('ehr/')
 %% Start Timer
 tic;
 
@@ -29,8 +29,8 @@ featureData.DSP = dsp;
 %% Set additional information for featureData
 featureData.numEvents = size(savedFeatures, 1); %sum(savedFeatures.qSofaTotal >= 2);
 featureData.tFeatures = savedFeatures;
-featureData.tFeatures.Properties.VariableNames(:, 13:16) = ...
-    featureData.tFeatures.Properties.VariableNames(:, 13:16) + "_original";
+featureData.tFeatures.Properties.VariableNames(:, 3:5) = ...
+    featureData.tFeatures.Properties.VariableNames(:, 3:5) + "_original";
 featureData.tFeatureNames = cell2table(featureData.tFeatures.Properties.VariableNames, 'VariableNames', featureData.tFeatures.Properties.VariableNames);
 
 %% convert each feature struct/name struct to table for editing, package for integration

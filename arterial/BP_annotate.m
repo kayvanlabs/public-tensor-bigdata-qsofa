@@ -194,7 +194,6 @@ function [ footIndex, systolicIndex, notchIndex, dicroticIndex, time, bpwaveform
        dicroticIndex = [];
        return;
     end
-%     footIndex = getFootIndex( bpwaveform, waveformDDPlus, zoneOfInterest );
 
     Down = 1; Up = ~Down;
     systolicIndex = FixIndex(footIndex + floor(integwinsize/2), bpwaveform, Up, floor(integwinsize/2));
@@ -363,6 +362,10 @@ function [ dicroticIndex, notchIndex ] = getDicroticIndex( waveformDD, waveformD
     for i = 1 : length(systolicIndex)
         Start = systolicIndex(i) + round(minWavelength/2);
         End = min([dicroticIndex(i) + round(minWavelength/4), length(waveformD)]);
+        if isnan(Start)
+            warning('RR was NaN')
+            continue
+        end
         ZOI = waveformD(Start : End);
         ZOI = ZOI(2:end).*ZOI(1:end-1);
         extrema = find(ZOI<0);

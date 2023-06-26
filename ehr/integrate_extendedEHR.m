@@ -15,6 +15,13 @@ function [updatedFeatures,updatedFeatureNames]=integrate_extendedEHR(medications
 % Author: Jonathan Gryak
 % Date: 20200113
 
+%%
+% Set columns
+cols.id = 'SepsisID';
+cols.enc = 'EncID';
+cols.outcome = 'Label';
+cols.signalStart = 'predictionSignalStart';
+cols.signalEnd = 'predictionSignalEnd';
 %% process each patient event
 %determine number of additional time periods for each feature
 %if gap <= 4 hours
@@ -50,13 +57,11 @@ extendedFeatures=cell(featureData.numEvents,numFeatures*numPeriods);
 extendedFeatureNames=cell(featureData.numEvents,numFeatures*numPeriods);
 for row=1:featureData.numEvents
     %create key from id/encounter
-    currKey= string(featureData.tFeatures{row,'Sepsis_ID'})+string(str2double(featureData.tFeatures{row,'Sepsis_EncID'}{1}));
+    currKey= string(featureData.tFeatures{row,cols.id})+string(str2double(featureData.tFeatures{row,cols.enc}{1}));
     %For R2018a and older: convert to char array
     %currKey=char(currKey);
-    %calculate window intervals
-    eventTime=featureData.tFeatures{row,'EventTime'};
     %calculate start time
-    startTime=dateshift(eventTime,'start','second',-featureData.DSP.gap-ceil(featureData.DSP.fullAnalysisWin)-(numPeriods*lengthPeriod));
+    startTime=featureData.tFeatures{row,cols.signalStart}-seconds(numPeriods*lengthPeriod);
     %process each feature
     for findex=1:numFeatures
         %get feature name
@@ -86,31 +91,36 @@ for row=1:featureData.numEvents
                 if isKey(encodingMap,featureName)
                     %check if no values found
                     if numnodes==0 || isnan(featnodes{1}.key)
-                        featval=zeros(1,encodingMap(featureName));
+                        featval=nan(1,encodingMap(featureName));
                     else
                         for node=1:numnodes
                             featvals(node)=onehot2dec(featnodes{node}.value);
                         end
-                        featval=round(median(featvals));
+                        featval=round(median(featvals, 'omitnan'));
                     end
                 %process numerical features
                 else
                     %check if no values found
                     if numnodes==0 || isnan(featnodes{1}.key)
-                        featval=0;
+                        featval=NaN;
                     else
                         for node=1:numnodes
-                             featvals(node)=featnodes{node}.value;
+                            if length(featnodes{node}.value) > 1
+                                featvals(node)=featnodes{node}.value{1};
+                            else
+                                featvals(node)=featnodes{node}.value;
+                            end
                         end
-                        featval=median(featvals);
+                        featval=median(featvals, 'omitnan');
                     end
                 end
             else
                 %encode missing value
                 if isKey(encodingMap,featureName)
-                    featval=zeros(1,encodingMap(featureName));
+                    %featval=zeros(1,encodingMap(featureName));
+                    featval = nan(1, encodingMap(featureName));
                 else
-                    featval=0;
+                    featval=NaN;
                 end
             end
             %store in featureArray
@@ -124,11 +134,11 @@ for row=1:featureData.numEvents
 end
 %add feature/name to tables
 newFeatureName=strcat(featureNames{1},'Retro');
-updatedFeatures=addvars(featureData.tFeatures,extendedFeatures(:,1),'Before','EncodedOutcome','NewVariableNames',newFeatureName);
-updatedFeatureNames=addvars(featureData.tFeatureNames,extendedFeatureNames(1,1),'Before','EncodedOutcome','NewVariableNames',newFeatureName);
+updatedFeatures=addvars(featureData.tFeatures,extendedFeatures(:,1),'Before',cols.outcome,'NewVariableNames',newFeatureName);
+updatedFeatureNames=addvars(featureData.tFeatureNames,extendedFeatureNames(1,1),'Before',cols.outcome,'NewVariableNames',newFeatureName);
 for i=2:numFeatures
     newFeatureName=strcat(featureNames{i},'Retro');
-    updatedFeatures=addvars(updatedFeatures,extendedFeatures(:,i),'Before','EncodedOutcome','NewVariableNames',newFeatureName);
-    updatedFeatureNames=addvars(updatedFeatureNames,extendedFeatureNames(1,i),'Before','EncodedOutcome','NewVariableNames',newFeatureName);
+    updatedFeatures=addvars(updatedFeatures,extendedFeatures(:,i),'Before',cols.outcome,'NewVariableNames',newFeatureName);
+    updatedFeatureNames=addvars(updatedFeatureNames,extendedFeatureNames(1,i),'Before',cols.outcome,'NewVariableNames',newFeatureName);
 end
 end

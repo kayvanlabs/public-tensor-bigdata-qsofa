@@ -41,10 +41,10 @@ function [featureName,encodedHematocrit]=encodeHematocrit(row,lr)
             encodedHematocrit = 3;
         elseif hctLevel < high
             %normal
-            encodedHematocrit = 2;
+            encodedHematocrit = 1;
         else
             %high
-            encodedHematocrit = 1;
+            encodedHematocrit = 2;
         end
     end
 

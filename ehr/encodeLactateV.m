@@ -12,10 +12,10 @@ function [featureName,encodedLactate]=encodeLactateV(row,lr)
     if ~isnan(lactateLevel)
         if lactateLevel < .5
             %low
-            encodedLactate = 1;
+            encodedLactate = 2;
         elseif lactateLevel <= 2.2
             %normal
-            encodedLactate = 2;
+            encodedLactate = 1;
         elseif lactateLevel <= 4.0
             %high
             encodedLactate = 3;

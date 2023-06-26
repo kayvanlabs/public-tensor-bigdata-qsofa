@@ -86,8 +86,19 @@ noncviIndex=containers.Map(noncvi_keys,1:numNonCVIs);
 %end of time, for representing infinity
 EOT=datenum(datetime("31-Dec-9999 12:00:00"));
 %%
+idCol = 'SepsisID';
+encCol = 'EncID';
+dateCol = 'DoseStartTime';
+termIdCol = 'MedicationTermID';
+fluidRateCol = 'FluidRate';
+doseCol = 'Dose';
+fluidUMCol = 'FluidRateUofMOriginal';
+doseUMcol = 'DoseUofMOriginal';
+doseStartCol = 'DoseStartTime';
+vaCodeCol = 'VaClassCode';
 %read table
 meds=readtable(filename);
+meds=sortrows(meds, {idCol, encCol, dateCol});
 [numRows,~]=size(meds);
 %create result data structure
 medications=struct;
@@ -115,10 +126,10 @@ currNonCVIs=zeros(1,numNonCVIs+1);
 %%
 %process each row
 for row=1:numRows
-    currDoDID=meds{row,'SepsisID'};
-    currDoDEnc=meds{row,'EncID'};
+    currID=meds{row,idCol};
+    currEnc=meds{row,encCol};
     %create key
-    currKey= string(currDoDID)+currDoDEnc;
+    currKey= string(currID)+currEnc;
     %check for new id/encounter pair
     if ~strcmp(prevKey,currKey)
         %process CVI intervals
@@ -167,21 +178,21 @@ for row=1:numRows
         currNonCVIs=zeros(1,numNonCVIs+1);
     end
     %process CVIs
-    if isKey(cviCodes,meds{row,'MedicationTermID'})
+    if isKey(cviCodes,meds{row,termIdCol})
         %get CVI name
-        cviName=cviCodes(meds{row,'MedicationTermID'});
+        cviName=cviCodes(meds{row,termIdCol});
         %get CVI index
         index=cviIndex(cviName);
         %get dose
-        currDose=meds{row,'Dose'};
+        currDose=meds{row,doseCol};
         if currDose == 0
             %get fluid rate
-            currDose=str2double(meds{row,'FluidRate'});
+            currDose=str2double(meds{row,fluidRateCol});
             conversionMap=fluidConvert;
-            conversionkey=strcat(string(meds{row,'MedicationTermID'}),meds{row,'FluidRateUofMOriginal'});
+            conversionkey=strcat(string(meds{row,termIdCol}),meds{row,fluidUMCol});
         else
             conversionMap=doseConvert;
-            conversionkey=strcat(string(meds{row,'MedicationTermID'}),meds{row,'DoseUofMOriginal'});
+            conversionkey=strcat(string(meds{row,termIdCol}),meds{row,doseUMcol});
         end
         %determine if the dosage would need to be converted
         if currDose==0
@@ -208,7 +219,7 @@ for row=1:numRows
                encodedValue=3;
            end
             %convert date to datetime
-            newTime=datetime(meds{row,'DoseStartTime'},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
+            newTime=datetime(meds{row,doseStartCol},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
             %ignore duplicate times for the same feature
             if numIntervals(index) < 1 || allIntervals{index}{numIntervals(index)}{1}~=newTime 
                 %increment numIntervals
@@ -218,9 +229,9 @@ for row=1:numRows
             end
         end
     %process non-CVIs
-    elseif ~isempty(meds{row,'VaClassCode'}{1}) && (isKey(noncviIndex,meds{row,'VaClassCode'}{1}) || isKey(noncviIndex,extractBefore(meds{row,'VaClassCode'}{1},3)))
+    elseif ~isempty(meds{row,vaCodeCol}{1}) && (isKey(noncviIndex,meds{row,vaCodeCol}{1}) || isKey(noncviIndex,extractBefore(meds{row,vaCodeCol}{1},3)))
         %convert date to datetime, extract date
-        newTime=datetime(meds{row,'DoseStartTime'},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
+        newTime=datetime(meds{row,doseStartCol},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
         %if new date and not the first date, add interval and value to tree
         if newTime~=prevNonCVITime && prevNonCVITime ~= datetime('tomorrow')
             interval.low=datenum(prevNonCVITime);
@@ -230,11 +241,11 @@ for row=1:numRows
             currNonCVIs=zeros(1,numNonCVIs+1);
         end
         %process medication
-        currMed=meds{row,'MedicationTermID'};
-        currClass=extractBefore(meds{row,'VaClassCode'}{1},3);
+        currMed=meds{row,termIdCol};
+        currClass=extractBefore(meds{row,vaCodeCol}{1},3);
         %get full code for CVs
         if strcmp(currClass,'CV')
-            currClass=meds{row,'VaClassCode'}{1};
+            currClass=meds{row,vaCodeCol}{1};
         end
         index=noncviIndex(currClass);
         if newTime==prevNonCVITime && currMed==prevNonCVIMed         

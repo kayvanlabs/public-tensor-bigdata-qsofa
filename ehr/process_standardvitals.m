@@ -4,7 +4,7 @@ function stdvitals = process_standardvitals(filename,params)
 % INPUTS
 %   filename    character array: full file name of the CSV file
 %               containing standardvitals. N.B. The CSV must be sorted
-%               by DoD_ID,DoD_Enc_ID,ObservationDate, in that sequence 
+%               by Sepsis_ID,Sepsis_Enc_ID,ObservationDate, in that sequence 
 %               in ascending order.
 %
 %   params      structure containing additional parameters:
@@ -24,6 +24,13 @@ function stdvitals = process_standardvitals(filename,params)
 % Author: Jonathan Gryak, modified by Olivia Pifer Alge
 % Modified: 20120113
 %%
+idCol = 'SepsisID';
+encCol = 'EncID';
+dateCol = 'ObservationDate';
+
+newtimeIdx = 1;
+eFeatureIdx = 2;
+eFeatureTimeIdx = 3;
 
 %names of feature to extract
 featureNames={'Temperature','SpO2','HR','MAP','RespiratoryRate'};
@@ -37,10 +44,11 @@ EOT=datenum(datetime("31-Dec-9999 12:00:00"));
 %read table
 %lr=filename;
 lr=readtable(filename);
+lr=sortrows(lr, {idCol, encCol, dateCol});
 [numRows,~]=size(lr);
 %create result data structure, which maps feature names to a second
 %container
-stdvitals = containers.Map;
+stdvitals = containers.Map;  % NOTE: THIS IS PASS-BY-REFERENCE
 numFeatures=length(featureNames);
 %map feature names to index
 fIX=containers.Map(featureNames,1:numFeatures);
@@ -50,21 +58,16 @@ for i=1:numFeatures
     stdvitals(featureNames{i})=containers.Map;
 end
 interval=struct;
-%state variables
 %previous 
 prevKey=NaN;
-%last seen value for each feature
-prevVal=repelem(NaN,numFeatures);
-%stores intervals for processing at end
-allIntervals=cell(1,numFeatures);
-%number of intervals encountered per feature
-numIntervals=zeros(1,numFeatures);
+%state variables
+[prevVal, prevTimes, allIntervals, numIntervals] = initializeEmpty(numFeatures);
 %process each row
 for row=1:numRows
-    currDoDID=lr{row,'SepsisID'};
-    currDoDEnc=lr{row,'EncID'};
+    currID=lr{row,idCol};
+    currEnc=lr{row,encCol};
     %create key
-    currKey= string(currDoDID)+currDoDEnc;
+    currKey= string(currID)+currEnc;
     %check for new id/encounter pair
     if ~strcmp(prevKey,currKey)
         for i=1:numFeatures
@@ -76,16 +79,16 @@ for row=1:numRows
                 it=featureMap(prevKey);
                 %add all intervals to the tree                
                 for j=1:(numIntervals(i)-1)                    
-                    interval.low=datenum(allIntervals{i}{j}{1});
-                    interval.high=datenum(dateshift(allIntervals{i}{j+1}{1},'start','second','previous'));
-                    it.Insert(interval,allIntervals{i}{j}{2});
-                    %celldisp({allIntervals{i}{j}{1},dateshift(allIntervals{i}{j+1}{1},'start','second','previous'),allIntervals{i}{j}{2}});
+                    interval.low=datenum(allIntervals{i}{j}{newtimeIdx});
+                    interval.high=datenum(dateshift(allIntervals{i}{j+1}{newtimeIdx},'start','second','previous'));
+                    it.Insert(interval,allIntervals{i}{j}([eFeatureIdx,eFeatureTimeIdx]));
+                    %celldisp({allIntervals{i}{j}{newtimeIdx},dateshift(allIntervals{i}{j+1}{newtimeIdx},'start','second','previous'),allIntervals{i}{j}{eFeatureIdx}});
                 end
                 %add final interval
-                interval.low=datenum(allIntervals{i}{numIntervals(i)}{1});
+                interval.low=datenum(allIntervals{i}{numIntervals(i)}{newtimeIdx});
                 interval.high=EOT;
-                it.Insert(interval,allIntervals{i}{numIntervals(i)}{2});
-                %celldisp({allIntervals{i}{numIntervals(i)}{1},EOT,allIntervals{i}{numIntervals(i)}{2}});
+                it.Insert(interval,allIntervals{i}{numIntervals(i)}([eFeatureIdx,eFeatureTimeIdx]));
+                %celldisp({allIntervals{i}{numIntervals(i)}{newtimeIdx},EOT,allIntervals{i}{numIntervals(i)}{eFeatureIdx}});
             end
         end
         %save key
@@ -95,31 +98,28 @@ for row=1:numRows
             featureMap=stdvitals(featureNames{i});
             featureMap(currKey)=IntervalTree();
         end
-        allIntervals=cell(1,numFeatures);
-        numIntervals=zeros(1,numFeatures);
-        prevVal=repelem(NaN,numFeatures);
+        [prevVal, prevTimes, allIntervals, numIntervals] = initializeEmpty(numFeatures);
     end
     %process supported vital signs
     for i=1:numFeatures
         %get encoding function
         encodingFunction=encodingMap(featureNames{i});
-        [featureName,encodedValue]=encodingFunction(row,lr,prevVal(i));
+        [featureName,encodedValue,featureTime]=encodingFunction(row,lr,prevVal(i),prevTimes(i));
         %get feature index
         index=fIX(featureName);
         %convert date to datetime
-        newTime=datetime(lr{row,'ObservationDate'},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
+        newTime=datetime(lr{row,dateCol},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
         %ignore duplicate times for the same feature
-        if numIntervals(index) < 1 || allIntervals{index}{numIntervals(index)}{1}~=newTime
-            %create new interval if value hasn't changed
-            if encodedValue~=prevVal(i)
-                %increment numIntervals
-                numIntervals(index)=numIntervals(index)+1;        
-                %add new interval and encoded value to the cell array  
-                allIntervals{index}{numIntervals(index)}={newTime,encodedValue};
-            end
+        if numIntervals(index) < 1 || allIntervals{index}{numIntervals(index)}{newtimeIdx}~=newTime
+            %create new interval
+            %increment numIntervals
+            numIntervals(index)=numIntervals(index)+1;        
+            %add new interval and encoded value to the cell array  
+            allIntervals{index}{numIntervals(index)}={newTime,encodedValue,featureTime};
         end
         %update previous value for the feature
         prevVal(i)=encodedValue;
+        prevTimes(i)=featureTime;
     end
 end
 %finalize last patient
@@ -131,18 +131,29 @@ for i=1:numFeatures
         it=featureMap(currKey);
         %add all intervals to the tree                
         for j=1:(numIntervals(i)-1)                    
-            interval.low=datenum(allIntervals{i}{j}{1});
-            interval.high=datenum(dateshift(allIntervals{i}{j+1}{1},'start','second','previous'));
-            it.Insert(interval,allIntervals{i}{j}{2});
+            interval.low=datenum(allIntervals{i}{j}{newtimeIdx});
+            interval.high=datenum(dateshift(allIntervals{i}{j+1}{newtimeIdx},'start','second','previous'));
+            it.Insert(interval,allIntervals{i}{j}([eFeatureIdx,eFeatureTimeIdx]));
         end
         %add final interval
-        interval.low=datenum(allIntervals{i}{numIntervals(i)}{1});
+        interval.low=datenum(allIntervals{i}{numIntervals(i)}{newtimeIdx});
         interval.high=EOT;
-        it.Insert(interval,allIntervals{i}{numIntervals(i)}{2});
+        it.Insert(interval,allIntervals{i}{numIntervals(i)}([eFeatureIdx,eFeatureTimeIdx]));
     end
 end
 %save
 if nargin==2 && isfield(params,'savefile')
     save(params.savefile,'stdvitals');
 end
+end
+
+function [prevVal, prevValTimes, allIntervals, numIntervals] = initializeEmpty(numFeatures)
+    %last seen value for each feature
+    prevVal = repelem(NaN, numFeatures);
+    prevValTimes = repelem(NaT, numFeatures);
+    %stores intervals for processing at end
+    allIntervals = cell(1, numFeatures);
+    %number of intervals encountered per feature
+    numIntervals = zeros(1, numFeatures);
+    %process each row
 end

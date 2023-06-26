@@ -1,7 +1,7 @@
 function [featureName,encodedPotassium]=encodePotassium(row,lr)
     featureName='Potassium';
     %one-hot encoding for potassium levels    
-    encodedPotassium=zeros(1,4);
+    encodedPotassium=nan;
  
     %convert value
     potassiumLevel=lr{row,'VALUE'};

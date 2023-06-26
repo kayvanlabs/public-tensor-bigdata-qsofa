@@ -14,7 +14,13 @@ function [updatedFeatures,updatedFeatureNames]=integrate_uncommonvitals(uncommon
 % OS: Windows 7
 % Author: Jonathan Gryak
 % Date: January 25, 2019
-
+%%
+% Set columns
+cols.id = 'SepsisID';
+cols.enc = 'EncID';
+cols.outcome = 'Label';
+cols.signalStart = 'predictionSignalStart';
+cols.signalEnd = 'predictionSignalEnd';
 %% process each patient event
 numFeatures=3;
 UncommonVitals=cell(featureData.numEvents,numFeatures);
@@ -23,12 +29,10 @@ UncommonVitalsNames=cell(featureData.numEvents,numFeatures);
 numWindows = round(featureData.DSP.fullAnalysisWin/featureData.DSP.winDuration);
 for row=1:featureData.numEvents
     %create key from id/encounter
-    currKey= string(featureData.tFeatures{row,'Sepsis_ID'})+string(str2double(featureData.tFeatures{row,'Sepsis_EncID'}{1}));
+    currKey= string(featureData.tFeatures{row,cols.id})+string(str2double(featureData.tFeatures{row,cols.enc}{1}));
     %disp(currKey);
-    %calculate window intervals
-    eventTime=featureData.tFeatures{row,'EventTime'};
     %calculate start time
-    startTime=dateshift(eventTime,'start','second',-featureData.DSP.gap-ceil(featureData.DSP.fullAnalysisWin));
+    startTime=featureData.tFeatures{row,cols.signalStart};
     %create feature cell array
     featureArray=cell(numFeatures,numWindows);
     %create featureNameArray
@@ -52,11 +56,11 @@ for row=1:featureData.numEvents
             ucvitals=it.Search(interval).value;
             %check for missing value and set if necessary
             if isempty(ucvitals)
-                ucvitals={21, 0, 0};
+                ucvitals={nan, nan, nan};
             end
         else
             %set missing value
-            ucvitals={21, 0, 0};
+            ucvitals={nan, nan, nan};
         end
         %store in featureArray
         for i=1:numFeatures
@@ -73,6 +77,6 @@ for row=1:featureData.numEvents
     end
 end
 %add feature/name to tables
-updatedFeatures=addvars(featureData.tFeatures,UncommonVitals(:,1),UncommonVitals(:,2),UncommonVitals(:,3),'Before','EncodedOutcome','NewVariableNames',{'FiO2','PEEP','Intubated'});
-updatedFeatureNames=addvars(featureData.tFeatureNames,UncommonVitalsNames(1,1),UncommonVitalsNames(1,2),UncommonVitalsNames(1,3),'Before','EncodedOutcome','NewVariableNames',{'FiO2','PEEP','Intubated'});
+updatedFeatures=addvars(featureData.tFeatures,UncommonVitals(:,1),UncommonVitals(:,2),UncommonVitals(:,3),'Before',cols.outcome,'NewVariableNames',{'FiO2','PEEP','Intubated'});
+updatedFeatureNames=addvars(featureData.tFeatureNames,UncommonVitalsNames(1,1),UncommonVitalsNames(1,2),UncommonVitalsNames(1,3),'Before',cols.outcome,'NewVariableNames',{'FiO2','PEEP','Intubated'});
 end

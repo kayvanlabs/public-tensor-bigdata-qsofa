@@ -19,10 +19,10 @@ function [featureName,encodedPlatelets]=encodePlatelets(row,lr)
             encodedPlatelets = 3;                
         elseif plateletLevel <= 400
             %normal
-            encodedPlatelets = 2;
+            encodedPlatelets = 1;
         else
             %high
-            encodedPlatelets = 1;
+            encodedPlatelets = 2;
         end
     end
 end

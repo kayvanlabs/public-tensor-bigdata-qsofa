@@ -1,6 +1,8 @@
-function [featureName,encodedMAP]=encodeMAP(row,lr,prevVal)
+function [featureName,encodedMAP,featureTime]=encodeMAP(row,lr,prevVal, prevTime)
     featureName='MAP';
- 
+    obsCol = 'ObservationDate';
+    noTime = NaT(1, 'TimeZone', lr{row, obsCol}.TimeZone);
+    featureTime = lr{row, 'ObservationDate'};
     %convert value
     currNonInvMAP=lr{row,'BPMeanNonInvasive'};
     if ~isnumeric(currNonInvMAP)
@@ -20,17 +22,18 @@ function [featureName,encodedMAP]=encodeMAP(row,lr,prevVal)
         currMAP = currInvMAP;
     else
         currMAP = NaN;
+        featureTime = noTime;
     end
-    %decide how to handle vital
+    
+        %decide how to handle vital
     if isnan(currMAP)
-        if isnan(prevVal)
-            %set to default
-            currMAP = 82.5;
-        else
+        if ~isnan(prevVal)
             %carry forward
-            currMAP=prevVal;
+            currMAP = prevVal;
+            featureTime = prevTime;
         end
     end
+    
     encodedMAP=currMAP;
 end
  

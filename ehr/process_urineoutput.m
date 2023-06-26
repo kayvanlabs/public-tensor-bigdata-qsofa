@@ -5,7 +5,7 @@ function urineoutput = process_urineoutput(filename,params)
 %   filename    character array: full file name of the CSV file
 %               containing the urineoutput from the NursingFluidsDetailed 
 %               view in RDW. N.B. The CSV must be sorted
-%               by DoD_ID,DoD_Enc_ID, MedicationObservationDate, in that 
+%               by Sepsis_ID,Sepsis_Enc_ID, MedicationObservationDate, in that 
 %               sequence and in ascending order.
 %
 %   params      structure containing additional parameters:
@@ -21,8 +21,12 @@ function urineoutput = process_urineoutput(filename,params)
 % Author: Jonathan Gryak
 % Date: 20190715
 %%
+idCol = 'SepsisID';
+encCol = 'EncID';
+dateCol = 'ObservationDate';
 %read table
 uo=readtable(filename);
+uo=sortrows(uo, {idCol, encCol, dateCol});
 [numRows,~]=size(uo);
 %create result data structure,
 urineoutput = containers.Map;
@@ -41,10 +45,10 @@ runningTotal=0;
 %process each row
 for row=1:numRows
 %for row=1:258
-    currDoDID=uo{row,'SepsisID'};
-    currDoDEnc=uo{row,'EncID'};
+    currID=uo{row,idCol};
+    currEnc=uo{row,encCol};
     %create key
-    currKey= string(currDoDID)+currDoDEnc;
+    currKey= string(currID)+currEnc;
     %check for new id/encounter pair
     if ~isKey(urineoutput,currKey)
         %process last interval for previous key
@@ -86,7 +90,7 @@ for row=1:numRows
         runningTotal=0;
     end
     %convert date to datetime
-    currTime=datetime(uo{row,'ObservationDate'},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
+    currTime=datetime(uo{row,dateCol},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
     %convert value
     currUrine=uo{row,'Urine'};
     %skip if invalid currUrine

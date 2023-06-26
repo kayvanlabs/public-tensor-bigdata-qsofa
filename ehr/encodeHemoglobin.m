@@ -41,10 +41,10 @@ function [featureName,encodedHemoglobin]=encodeHemoglobin(row,lr)
             encodedHemoglobin = 3;
         elseif hgbLevel <= high
             %normal
-            encodedHemoglobin = 2;
+            encodedHemoglobin = 1;
         else
             %high
-            encodedHemoglobin = 1;
+            encodedHemoglobin = 2;
         end
     end
 

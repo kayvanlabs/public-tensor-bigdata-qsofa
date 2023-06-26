@@ -15,6 +15,13 @@ function [updatedFeatures,updatedFeatureNames]=integrate_urineoutput(urineoutput
 % Author: Jonathan Gryak
 % Date: January 25, 2019
 
+%%
+% Set columns
+cols.id = 'SepsisID';
+cols.enc = 'EncID';
+cols.outcome = 'Label';
+cols.signalStart = 'predictionSignalStart';
+cols.signalEnd = 'predictionSignalEnd';
 %% process each patient event
 UrineOutputs=cell(featureData.numEvents,1);
 UrineOutputsNames=cell(featureData.numEvents,1);
@@ -22,11 +29,9 @@ UrineOutputsNames=cell(featureData.numEvents,1);
 numWindows = round(featureData.DSP.fullAnalysisWin/featureData.DSP.winDuration);
 for row=1:featureData.numEvents
     %create key from id/encounter
-    currKey= string(featureData.tFeatures{row,'Sepsis_ID'})+string(str2double(featureData.tFeatures{row,'Sepsis_EncID'}{1}));
-    %calculate window intervals
-    eventTime=featureData.tFeatures{row,'EventTime'};
+    currKey= string(featureData.tFeatures{row,cols.id})+string(str2double(featureData.tFeatures{row,cols.enc}{1}));
     %calculate start time
-    startTime=dateshift(eventTime,'start','second',-featureData.DSP.gap-ceil(featureData.DSP.fullAnalysisWin));
+    startTime=featureData.tFeatures{row,cols.signalStart};
     %create feature cell array
     featureArray=cell(1,numWindows);
     %create featureNameArray
@@ -47,7 +52,7 @@ for row=1:featureData.numEvents
             uo=it.Search(interval).value;
         else
             %set value for missing patient
-            uo=0;
+            uo=nan;
         end
         %store in featureArray
         featureArray{1,win}=uo;
@@ -60,6 +65,6 @@ for row=1:featureData.numEvents
 end
 
 %add feature/name to tables
-updatedFeatures=addvars(featureData.tFeatures,UrineOutputs(:,1),'Before','EncodedOutcome','NewVariableNames',{'UrineOutput'});
-updatedFeatureNames=addvars(featureData.tFeatureNames,UrineOutputsNames(1,1),'Before','EncodedOutcome','NewVariableNames',{'UrineOutput'});
+updatedFeatures=addvars(featureData.tFeatures,UrineOutputs(:,1),'Before',cols.outcome,'NewVariableNames',{'UrineOutput'});
+updatedFeatureNames=addvars(featureData.tFeatureNames,UrineOutputsNames(1,1),'Before',cols.outcome,'NewVariableNames',{'UrineOutput'});
 end

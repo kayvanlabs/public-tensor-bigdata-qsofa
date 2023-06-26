@@ -4,7 +4,7 @@ function uncommonvitals = process_uncommonvitals(filename,params)
 % INPUTS
 %   filename    character array: full file name of the CSV file
 %               containing labresults. N.B. The CSV must be sorted
-%               by DoD_ID,DoD_Enc_ID,ObservationDate, in that sequence 
+%               by Sepsis_ID,Sepsis_Enc_ID,ObservationDate, in that sequence 
 %               in asceding order.
 %
 %   params      structure containing additional parameters:
@@ -26,8 +26,12 @@ extubated={'Not intubated','Unknown / Missing','CPAP'};
 %end of time, for representing infinity
 EOT=datenum(datetime("31-Dec-9999 12:00:00"));
 %%
+idCol = 'SepsisID';
+encCol = 'EncID';
+dateCol = 'ObservationDate';
 %read table
 uv=readtable(filename);
+uv=sortrows(uv, {idCol, encCol, dateCol});
 [numRows,~]=size(uv);
 %create result data structure,
 uncommonvitals = containers.Map;
@@ -41,10 +45,10 @@ last_ventstatus=NaN;
 
 %process each row
 for row=1:numRows
-    currDoDID=uv{row,'SepsisID'};
-    currDoDEnc=uv{row,'EncID'};
+    currID=uv{row,idCol};
+    currEnc=uv{row,encCol};
     %create key
-    currKey= string(currDoDID)+currDoDEnc;
+    currKey= string(currID)+currEnc;
     %check for new id/encounter pair
     if ~isKey(uncommonvitals,currKey)
         %check if not first interval
@@ -157,7 +161,7 @@ for row=1:numRows
             %increment numIntervals
             numIntervals=numIntervals+1;        
             %convert date to datetime
-            newTime=datetime(uv{row,'ObservationDate'},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
+            newTime=datetime(uv{row,dateCol},'InputFormat','yyyy-MM-dd HH:mm:ss.SSSSSSS');
 
             %add new interval and values to the cell array
             allIntervals{numIntervals}={newTime,curr_fio2,curr_peep,curr_ventstatus};

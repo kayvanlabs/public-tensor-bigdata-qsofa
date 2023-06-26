@@ -15,6 +15,14 @@ function [updatedFeatures,updatedFeatureNames]=integrate_temporalmedications(med
 % Author: Jonathan Gryak
 % Date: 20190205
 
+%%
+% Set columns
+cols.id = 'SepsisID';
+cols.enc = 'EncID';
+cols.outcome = 'Label';
+cols.signalStart = 'predictionSignalStart';
+cols.signalEnd = 'predictionSignalEnd';
+
 %% process each patient event
 featureNames=medications.keys;
 numFeatures=length(featureNames);
@@ -24,9 +32,7 @@ MedFeatureNames=cell(featureData.numEvents,numFeatures);
 numWindows = round(featureData.DSP.fullAnalysisWin/featureData.DSP.winDuration);
 for row=1:featureData.numEvents
     %create key from id/encounter
-    currKey= string(featureData.tFeatures{row,'Sepsis_ID'})+string(str2double(featureData.tFeatures{row,'Sepsis_EncID'}{1}));
-    %calculate window intervals
-    eventTime=featureData.tFeatures{row,'EventTime'};
+    currKey= string(featureData.tFeatures{row,cols.id})+string(str2double(featureData.tFeatures{row,cols.enc}{1}));
     %process each feature
     for findex=1:numFeatures
         %get feature name
@@ -36,7 +42,7 @@ for row=1:featureData.numEvents
         %create featureNameArray
         featureNameArray=cell(numWindows,1);
         %calculate start time
-        startTime=dateshift(eventTime,'start','second',-featureData.DSP.gap-ceil(featureData.DSP.fullAnalysisWin));
+        startTime=featureData.tFeatures{row,cols.signalStart};
         %process each window
         for win=1:numWindows
             %needed for parfor
@@ -54,7 +60,7 @@ for row=1:featureData.numEvents
                 featval=it.Search(interval).value;
                 %check for missing value and encode
                 if isempty(featval)
-                    featval=0;
+                    featval=0;  % medication could not be parsed/is missing/was not administered == 0
                 end
             else
                 %encode missing value
@@ -70,10 +76,10 @@ for row=1:featureData.numEvents
     end
 end
 %add feature/name to tables
-updatedFeatures=addvars(featureData.tFeatures,MedFeatures(:,1),'Before','EncodedOutcome','NewVariableNames',featureNames{1});
-updatedFeatureNames=addvars(featureData.tFeatureNames,MedFeatureNames(1,1),'Before','EncodedOutcome','NewVariableNames',featureNames{1});
+updatedFeatures=addvars(featureData.tFeatures,MedFeatures(:,1),'Before',cols.outcome,'NewVariableNames',featureNames{1});
+updatedFeatureNames=addvars(featureData.tFeatureNames,MedFeatureNames(1,1),'Before',cols.outcome,'NewVariableNames',featureNames{1});
 for i=2:numFeatures
-    updatedFeatures=addvars(updatedFeatures,MedFeatures(:,i),'Before','EncodedOutcome','NewVariableNames',featureNames{i});
-    updatedFeatureNames=addvars(updatedFeatureNames,MedFeatureNames(1,i),'Before','EncodedOutcome','NewVariableNames',featureNames{i});
+    updatedFeatures=addvars(updatedFeatures,MedFeatures(:,i),'Before',cols.outcome,'NewVariableNames',featureNames{i});
+    updatedFeatureNames=addvars(updatedFeatureNames,MedFeatureNames(1,i),'Before',cols.outcome,'NewVariableNames',featureNames{i});
 end
 end

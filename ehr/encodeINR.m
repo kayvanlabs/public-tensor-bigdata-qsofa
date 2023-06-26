@@ -14,10 +14,10 @@ function [featureName,encodedINR]=encodeINR(row,lr)
     if ~isnan(INRLevel)
         if INRLevel < .9
             %low
-            encodedINR = 1;                
+            encodedINR = 2;                
         elseif INRLevel <= 1.2
             %normal
-            encodedINR = 2;
+            encodedINR = 1;
         elseif INRLevel <= 2.0
             %high
             encodedINR = 3;

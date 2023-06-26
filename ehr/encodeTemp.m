@@ -1,6 +1,8 @@
-function [featureName,encodedTemp]=encodeTemp(row,lr,prevVal)
+function [featureName,encodedTemp,featureTime]=encodeTemp(row,lr,prevVal,prevTime)
     featureName='Temperature';
- 
+    obsCol = 'ObservationDate';
+    noTime = NaT(1, 'TimeZone', lr{row, obsCol}.TimeZone);
+    featureTime = noTime;
     %convert value
     currTemp=lr{row,'Temperature'};
     if ~isnumeric(currTemp)
@@ -8,6 +10,7 @@ function [featureName,encodedTemp]=encodeTemp(row,lr,prevVal)
     end
     %validate temperature, perform conversions
     if ~isnan(currTemp)
+        featureTime = lr{row, obsCol};
         %first convert to celsius if necessary
         %celsius, do nothing
         if currTemp >=26 && currTemp <=44
@@ -17,6 +20,7 @@ function [featureName,encodedTemp]=encodeTemp(row,lr,prevVal)
         %invalid temperature
         else
             currTemp=NaN;
+            featureTime = noTime;
         end
         %adjust temperature based on the source to be oral temp, assume unknown is oral
         tempRoute =lr{row,'TemperatureRoute'}{1};
@@ -29,16 +33,14 @@ function [featureName,encodedTemp]=encodeTemp(row,lr,prevVal)
             currTemp=currTemp+.45;
         end
     end
+    
     %decide how to handle vital
     if isnan(currTemp)
-        if isnan(prevVal)
-            %set to default
-            currTemp = 37;
-        else
+        if ~isnan(prevVal)
             %carry forward
-            currTemp=prevVal;
+            currTemp = prevVal;
+            featureTime = prevTime;
         end
     end
-    encodedTemp=currTemp;
+    encodedTemp = currTemp;
 end
- 

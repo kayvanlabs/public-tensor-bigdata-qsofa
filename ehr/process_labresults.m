@@ -20,6 +20,7 @@ function labresults = process_labresults(filename,params)
 %   Encoding for Lab Results
 %       0 - Missing
 %       1-4 in increasing severity
+%       depending upon the particular lab value
 %
 % Language: MATLAB R2017b
 % Author: Jonathan Gryak
@@ -50,9 +51,12 @@ featureNames={'Lactate','Creatinine','Sodium','Potassium','Glucose','HCT','Hgb',
 %end of time, for representing infinity
 EOT=datenum(datetime("31-Dec-9999 12:00:00"));
 %%
+idCol = 'SepsisID';
+encCol = 'EncID';
+
 %read table
-%lr=filename;
 lr=readtable(filename);
+lr=sortrows(lr, {idCol, encCol, 'COLLECTION_DATE'});
 [numRows,~]=size(lr);
 %create result data structure, which maps feature names to a second
 %container
@@ -71,10 +75,10 @@ allIntervals=cell(1,numFeatures);
 numIntervals=zeros(1,numFeatures);
 %process each row
 for row=1:numRows
-    currSepsisID=lr{row,'SepsisID'};
-    currSepsisEnc=lr{row,'EncID'};
+    currID=lr{row,idCol};
+    currEnc=lr{row,encCol};
     %create key
-    currKey= string(currSepsisID)+currSepsisEnc;
+    currKey= string(currID)+currEnc;
     %check for new id/encounter pair
     if ~strcmp(prevKey,currKey)
         for i=1:numFeatures

@@ -5,7 +5,7 @@ function [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, allSignalsIn
     nRows = size(allSignalsInfo, 1);
     colNamesEcg = ["SepsisID", "Sepsis_EncID", "Label", "ECG"];
     colNamesAbp = ["SepsisID", "Sepsis_EncID", "Label", "ABP"];
-    dirExtracted = configFile.nonspecific.extracted;
+    dirExtracted = configFile.extracted;
     rawEcgStruct = initializeRawStruct(nRows / 2, colNamesEcg);
     rawAbpStruct = initializeRawStruct(nRows / 2, colNamesAbp);
     

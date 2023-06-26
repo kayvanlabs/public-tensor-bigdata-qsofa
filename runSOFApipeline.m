@@ -103,6 +103,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     %% Run pipeline2
     % Get tensors for ECG and Art Line
     addpath(genpath('tensor_pipeline/'));
+    addpath(genpath('tensor_toolbox-master/'))  % From Sandia lab
     expName = generateDataAndExperimentName(signalsUsing, gapDuration, signalDuration);
     driver_tensorize(outcomeName + "ECG", "ECG_" + expName + "_TS", "TS", nWindows);
     driver_tensorize(outcomeName + "Art", "Art_" + expName + "_ABP", "ABP", nWindows);

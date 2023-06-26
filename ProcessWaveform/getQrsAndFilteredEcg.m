@@ -16,8 +16,6 @@ function [qrsOut, ecgOut, hrvOut] = getQrsAndFilteredEcg(tableIn)
 % 
 % OUTPUT
 % ecgOut: tableIn, but with Signals processed
-
-    addpath('../../QRS_detection/')
     
     fsEcg = 240;  % Sampling rate of ECG
     

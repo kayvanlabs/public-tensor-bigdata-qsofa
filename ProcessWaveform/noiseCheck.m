@@ -39,6 +39,9 @@ function output = noiseCheck(configFile, signalsInfo)
                              append(iFileName, '.csv'));
         
         try 
+            if ~contains(sigName, 'EKG')
+                error('must be EKG')
+            end
             iFullSignal = readCsvWithScan(char(iFilePath));
             iSignal = iFullSignal; %iFullSignal(round(iStartIdx):round(iEndIdx));
 
@@ -50,6 +53,7 @@ function output = noiseCheck(configFile, signalsInfo)
             percent_not_noisy(i) = (length(noisy) - sum(noisy)) / length(noisy);
         catch ME
             warning(['something went wrong at i = ', num2str(i)])
+            disp(ME.message);
             percent_not_noisy(i) = -1;
             noisy = -1;
         end

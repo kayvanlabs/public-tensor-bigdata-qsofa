@@ -1,4 +1,4 @@
-function signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes, groupChar)
+function signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes)
 % DESCRIPTION Create table of information for signal name and duration
 %
 % INPUTS
@@ -21,37 +21,44 @@ function signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes, grou
     extractedDir = configFile.extracted;
     durationFile = 'nonspecificWaveformDurations.mat';
     
-    % Initialize output
-    Duration = zeros(size(waveformTimes, 1), 1);
-    sigNames = cell(1, size(waveformTimes, 1));
+    % Only perform processing if file does not exist
+    if isempty(dir(fullfile(extractedDir, durationFile)))
+        % Initialize output
+        Duration = zeros(size(waveformTimes, 1), 1);
+        sigNames = cell(1, size(waveformTimes, 1));
 
-    % Calculate duration information for each signal
-    for i = 1:size(waveformTimes, 1)
-        iObj = waveformTimes(i, :);
-        iSigType = signal_type_abbreviation(char(iObj.WaveType));
-        iSamplingRate = get_sampling_rate(iSigType);
-        iDirName = strjoin({num2str(iObj.Sepsis_ID), ...
-                            char(iObj.Sepsis_EncID), ...
-                            char(iObj.WaveType), ...
-                            char(iObj.WaveID)}, ...
-                            '_');
-        sigNames{i} = iDirName;
-        
-        fileToRead = fullfile(extractedDir, [iDirName, '.csv']);
-        
-        % Read file and get duration
-        iDuration = computeSignalDuration(fileToRead, iSamplingRate);
-        Duration(i) = iDuration;
-        
+        % Calculate duration information for each signal
+        for i = 1:size(waveformTimes, 1)
+            iObj = waveformTimes(i, :);
+            iSigType = signal_type_abbreviation(char(iObj.WaveType));
+            iSamplingRate = get_sampling_rate(iSigType);
+            iDirName = strjoin({num2str(iObj.Sepsis_ID), ...
+                                char(iObj.Sepsis_EncID), ...
+                                char(iObj.WaveType), ...
+                                char(iObj.WaveID)}, ...
+                                '_');
+            sigNames{i} = iDirName;
+
+            fileToRead = fullfile(extractedDir, [iDirName, '.csv']);
+
+            % Read file and get duration
+            iDuration = computeSignalDuration(fileToRead, iSamplingRate);
+            Duration(i) = iDuration;
+
+            save(durationFile, 'sigNames', 'Duration');
+
+            % Display loop iteration
+            disp(['Iteration ', num2str(i), ' out of ', ...
+                   num2str(size(waveformTimes, 1)) '...']);
+        end
+
+        % Save output to file
         save(durationFile, 'sigNames', 'Duration');
-        
-        % Display loop iteration
-        disp(['Iteration ', num2str(i), ' out of ', ...
-               num2str(size(waveformTimes, 1)) '...']);
+    else
+        loadedFile = load(fullfile(extractedDir, durationFile));
+        sigNames = loadedFile.sigNames;
+        Duration = loadedFile.Duration;
     end
-    
-    % Save output to file
-    save(durationFile, 'sigNames', 'Duration');
     
     % Add additional columns
     signalsInfo = addTheColumns(waveformTimes, Duration, sigNames);

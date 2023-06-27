@@ -23,6 +23,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     %% Load in paths
     addpath('GeneralProcessing/');
     addpath(genpath('ProcessWaveform/'));
+    addpath('qsofaScore');
     configFile = jsondecode(fileread('config.json'));  % paths for data
     
     %% First, if needed, generate outcomes
@@ -43,10 +44,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     
     % If needed, check noise level of signals
     noiseCheck(configFile, signalsInfo);
-    
-    %% Create signal data based on gap and signal duration
-    addpath('qsofaScore');
-    
+       
     %% Create the status variable
     allSignalsInfo = findOutcomesForQSOFA(configFile.qsofa, configFile.noise, ...
                                           signalsInfo, hours(0), signalDuration);

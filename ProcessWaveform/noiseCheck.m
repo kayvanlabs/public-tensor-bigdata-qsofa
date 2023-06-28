@@ -58,8 +58,9 @@ function output = noiseCheck(configFile, signalsInfo)
             noisy = -1;
         end
         disp(['Iteration ', num2str(i)]);
-        save('percent_not_noisy.mat', 'percent_not_noisy');
-        save(['noisy_nonspecific/noisy_', num2str(i), '.mat'], 'noisy', '-v7.3')
+        tempTable = table(signalsInfo(1:i, 'Sepsis_ID'), signalsInfo(1:i, 'WaveID'), percent_not_noisy');
+        save('percent_not_noisy.mat', 'tempTable');
+        save(['noisy_nonspecific/noisy_', iFileName, '.mat'], 'noisy', '-v7.3')
     end
     output.percent_not_noisy = percent_not_noisy;
 end

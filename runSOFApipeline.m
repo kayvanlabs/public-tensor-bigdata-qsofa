@@ -35,10 +35,10 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     
     %% Generate Signals Information
     waveformTimes = loadWaveformTimes(configFile.waveformTimes);
-    waveformTimes = waveformTimes(selectDesiredSignals(waveformTimes), :);
     
     % Select signals at or below discrepancy threshold
     signalsInfo = addColumnsToWaveformTimes(configFile, waveformTimes);
+    signalsInfo = signalsInfo(selectDesiredSignals(signalsInfo), :);
     colName = 'AbsVal_TimeStampDur_minus_Duration';
     signalsInfo = selectSigsBelowThresh(signalsInfo, colName, discrepDuration);
     
@@ -51,11 +51,14 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     a = [];
     b = [];
     c = [];
-    for i = 1:size(allSignalsInfo)
+    for i = 1:size(allSignalsInfo, 1)
         [enc, stat] = getEncAndStat(allSignalsInfo{i, 'Sepsis_EncID'});
         a = [a; enc];
         b = [b; stat];
-        c = [c; string(strrep(num2str(signalsInfo{1, 'qSofaEncoding'}), ' ', ''))];
+        c = [c; string(strrep(num2str(allSignalsInfo{i, 'qSofaEncoding'}), ' ', ''))];
+        if mod(i, 10000) == 0
+            disp(strcat("Iteration ", num2str(i), " of ", num2str(size(allSignalsInfo, 1))));
+        end
     end
     allSignalsInfo.Sepsis_EncID = a;
     allSignalsInfo.Status = b;

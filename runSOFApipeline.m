@@ -71,6 +71,13 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     [posCondition, negCondition] = createQsofaCriteria1to2(signalsInfo, gapDuration, signalDuration);
     signalsInfo = [posCondition; negCondition];
     
+    %% Make table easier to read
+    signalsInfo = movevars(signalsInfo, 'Sepsis_EncID', 'After', 'Sepsis_ID');
+    signalsInfo = movevars(signalsInfo, ["WaveType", "WaveID", "StartTime", "EndTime", "predictionSignalStart", "predictionSignalEnd"], 'After', 'Sepsis_EncID'); 
+    signalsInfo = movevars(signalsInfo, ["EncodedOutcome", "qSofaTotal"], 'Before', 'BPSysNonInvasive');
+    signalsInfo = removevars(signalsInfo, 'qSofaEncoding');
+    signalsInfo = removevars(signalsInfo, ["DurationStartMinusEnd", "Duration", "TimeStampDuration_minus_Duration", "AbsVal_TimeStampDur_minus_Duration", "availableBeforeQSOFA"]);
+    
     %% Integrate EHR data
     gapStr = strcat('signalsInfo_gap_', num2str(hours(gapDuration)), '_hr_');
     sigStr = strcat('signal_', num2str(minutes(signalDuration)), '_min');

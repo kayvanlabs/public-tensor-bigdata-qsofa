@@ -59,7 +59,7 @@ function positiveSignals = getPositiveSignals(noiseDir, signalDuration, gapDurat
                 rowsToAdd = newRows(jEkg, :);
                 if any(artRows)
                    aIdx = min(length(arList), j);
-                   rowsToAdd = [rowsToAdd; newRows(aIdx, :)];
+                   rowsToAdd = [rowsToAdd; newRows(arList(aIdx), :)];
                 end
                 nRows = size(rowsToAdd, 1);
                 rowsToAdd.(pSigStart) = repelem(predictionSignalStart, nRows)';

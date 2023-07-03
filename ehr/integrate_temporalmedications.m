@@ -17,8 +17,8 @@ function [updatedFeatures,updatedFeatureNames]=integrate_temporalmedications(med
 
 %%
 % Set columns
-cols.id = 'SepsisID';
-cols.enc = 'EncID';
+cols.id = 'Sepsis_ID';
+cols.enc = 'Sepsis_EncID';
 cols.outcome = 'Label';
 cols.signalStart = 'predictionSignalStart';
 cols.signalEnd = 'predictionSignalEnd';

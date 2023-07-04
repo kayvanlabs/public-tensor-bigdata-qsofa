@@ -20,10 +20,10 @@ function [wvFeatureTable, featList] = appendEhrData(wvFeatureTable, ehrFeatures)
    ehrMat(isnan(ehrMat)) = 0;
    ehrCells = mat2cell(ehrMat, ones(1, size(ehrMat, 1)));
    ehrTable = table(ehrBroken.Sepsis_ID, ehrBroken.Sepsis_EncID, ehrCells, ...
-                    'VariableNames', ["SepsisID", "Sepsis_EncID", "EHR_Data_Features"]);
+                    'VariableNames', ["Sepsis_ID", "Sepsis_EncID", "EHR_Data_Features"]);
    
   % This preserves the order (rather than innerjoin)
    wvFeatureTable = join(wvFeatureTable, ehrTable, ...
-                         'LeftKeys', ["SepsisID", "Sepsis_EncID"], ...
-                         'RightKeys', ["SepsisID", "Sepsis_EncID"]);
+                         'LeftKeys', ["Sepsis_ID", "Sepsis_EncID"], ...
+                         'RightKeys', ["Sepsis_ID", "Sepsis_EncID"]);
 end

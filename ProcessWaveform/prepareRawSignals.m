@@ -3,8 +3,8 @@ function [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, allSignalsIn
 % find_signal_index_from_time()
     %% Create empty tables
     nRows = size(allSignalsInfo, 1);
-    colNamesEcg = ["SepsisID", "Sepsis_EncID", "Label", "ECG"];
-    colNamesAbp = ["SepsisID", "Sepsis_EncID", "Label", "ABP"];
+    colNamesEcg = ["Sepsis_ID", "Sepsis_EncID", "Label", "ECG"];
+    colNamesAbp = ["Sepsis_ID", "Sepsis_EncID", "Label", "ABP"];
     dirExtracted = configFile.extracted;
     rawEcgStruct = initializeRawStruct(nRows / 2, colNamesEcg);
     rawAbpStruct = initializeRawStruct(nRows / 2, colNamesAbp);

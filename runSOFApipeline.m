@@ -86,17 +86,16 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
     tempEhrFile = fullfile(configFile.ehr, 'temporalEHR.mat');
     save(fFile, 'signalsInfo')
     integrateTemporalEhrFeatures(fFile,tempEhrFile, gapDuration, signalDuration, nWindows);
+    signalsInfo = load(strrep(fFile, '.mat', '_temporalEHR.mat'));
+    signalsInfo = signalsInfo.features;
     [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, signalsInfo, signalDuration);
     
     %% Get filtered Signals
     addpath('QRS_detection\')
     [~, filteredEcgTable, ~] = getQrsAndFilteredEcg(rawEcgTable);
     filteredAbpTable = getFilteredArt(rawAbpTable);
-    eFile = fullfile(configFile.(lower(outcomeName)), ...
-                     strcat(gapStr, sigStr, '_temporalEHR.mat'));
-    tempEhr = load(eFile);
-    filteredAbpWithEhr = appendEhrData(filteredAbpTable, tempEhr.features);
-    [filteredEcgWithEhr, ehrNames] = appendEhrData(filteredEcgTable, tempEhr.features);
+    filteredAbpWithEhr = appendEhrData(filteredAbpTable, signalsInfo);
+    [filteredEcgWithEhr, ehrNames] = appendEhrData(filteredEcgTable, signalsInfo);
     
     save('filteredEcgWithEhr.mat', 'filteredEcgWithEhr')
     save('filteredAbpWithEhr.mat', 'filteredAbpWithEhr')

@@ -1,7 +1,7 @@
 function [bestResults, bestModel, allResults] = trainSvmWithGrid(trainVector, setRank, metricToGrade, seed)
 % Train SVM model with grid search to determine optimal
 % parameters, then return trained model
-    addpath('../../BCIL-Shared/AUC/');   % For Area under ROC curve
+    addpath('../AUC/');   % For Area under ROC curve
     addpath('../GeneralProcessing/')  % For Area under Precision Recall curve
     
     modelVar = 'svm';

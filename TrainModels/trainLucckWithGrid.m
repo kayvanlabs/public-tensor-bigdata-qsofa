@@ -2,9 +2,9 @@ function [bestResults, bestModel, allResults] = trainLucckWithGrid(trainVector, 
 % Train LUCCK model with grid search to determine optimal
 % parameters, then return trained model
 % Adapted from Larry Hernandez's trainFlexibleNonConvex.m
-    addpath('../../BCIL-Shared/AUC/');   % For Area under ROC curve
+    addpath('../AUC/');   % For Area under ROC curve
     addpath('../GeneralProcessing/')  % For Area under Precision Recall curve
-    addpath('../../flexconvexkernels/');  % For LUCCK
+    addpath('../LUCCK/');  % For LUCCK
     
     modelVar = 'lucck';
     params = assignParams();

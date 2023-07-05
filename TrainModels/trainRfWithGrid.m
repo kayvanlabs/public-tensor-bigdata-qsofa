@@ -1,7 +1,7 @@
 function [bestResults, bestModel, allResults] = trainRfWithGrid(trainVector, setRank, metricToGrade, seed)
 % Train random forest model with grid search to determine optimal
 % parameters, then return trained model
-    addpath('../../BCIL-Shared/AUC/');   % For Area under ROC curve
+    addpath('../AUC/');   % For Area under ROC curve
     addpath('../GeneralProcessing/')  % For Area under Precision Recall curve
     params = assignParams();
     params.split_seed = seed;

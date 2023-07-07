@@ -85,7 +85,7 @@ function runSOFApipeline(gapDuration, signalDuration, nWindows, discrepDuration)
                      strcat(gapStr, sigStr, '.mat'));
     tempEhrFile = fullfile(configFile.ehr, 'temporalEHR.mat');
     save(fFile, 'signalsInfo')
-    integrateTemporalEhrFeatures(fFile,tempEhrFile, gapDuration, signalDuration, nWindows);
+    integrateTemporalEhrFeatures(fFile, tempEhrFile, gapDuration, signalDuration, nWindows);
     signalsInfo = load(strrep(fFile, '.mat', '_temporalEHR.mat'));
     signalsInfo = signalsInfo.features;
     [rawEcgTable, rawAbpTable] = prepareRawSignals(configFile, signalsInfo, signalDuration);

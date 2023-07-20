@@ -24,4 +24,10 @@
 arterial/code_tests/*
 arterial/unused/*
 TautString/unused/*
+ehr/unused/*
+
+# Other work
 noiseDetectionECG/pan_tompkin.m
+
+# Slurm files
+*.sh

@@ -1,28 +1,27 @@
 % Provide sufficient details to allow the work to be reproduced by an independent researcher. Methods that are already published should be summarized, and indicated by a reference. If quoting directly from a previously published method, use quotation marks and also cite the source. Any modifications to existing methods should also be described.
 
-A schematic of the methods used in this paper is presented in Fig.\ref{fig:schematic}.
+%A schematic of the methods used in this paper is presented in Fig.\ref{fig:schematic}.
 
-\begin{figure}[htb]
-    \centering
-    \includegraphics[width=\textwidth]{schematic_v2.png}
-    \caption{Schematic}
-    \label{fig:schematic}
-\end{figure}
+%\begin{figure}[htb]
+%    \centering
+%    \includegraphics[width=\textwidth]{schematic_v2.png}
+%    \caption{Schematic}
+%    \label{fig:schematic}
+%\end{figure}
 
 % About dataset
 \subsection{Dataset} \label{sec:methods_dataset}
 
 The retrospective dataset consisted of 1,803 unique individuals age $\geq$ 18 years with 3,516 unique encounters between 2013-2018 at Michigan Medicine. Individuals' characteristics are presented in Supplementary Table 1. The detailed inclusion/exclusion criteria for the dataset are provided in Supplementary Materials Section 1.4, but briefly, inclusion criteria selected for inpatient encounters with: ECG lead II waveforms at least 15 minutes in length and ICD9/10 codes for pneumonia, cellulitis, or urinary tract infection (UTI), excluding UTIs associated with catheters. Exclusion criteria included positive HIV status, solid organ or bone marrow transplant, and ongoing chemotherapy. These criteria created a dataset that did not specifically select for sepsis diagnosis, but instead focused on patients with an infection who were at risk to develop sepsis and septic shock. This dataset was selected from a Michigan Medicine biobank, whose data collection was approved by the institutional review board of University of Michigan. Informed consent was waived, as this was a retrospective study of previously collected and de-identified data, without direct involvement of human subjects and therefore no chance of physical harm or discomfort to the individuals being studied. Individuals reported their own sex and race/ethnicity, from categories defined by Michigan Medicine, and this information is included in Supplementary Table 1 to provide information on the population of this study.
 
-This larger dataset was reduced by selecting for individuals who had EHR, ECG, and arterial line data available. In this study, EHR data included variables such as labs, medications, demographics, and comorbidities. More details on how each of these different data types were processed are provided in Sections \ref{sec:methods_art_data}, \ref{sec:methods_ecg_data}, and \ref{sec:methods_ehr}. Because poor signal quality can result in false alarms \cite{gambarotta_review_2016}, the ECG signal was reviewed automatically using Pan-Tompkins to identify QRS complexes \cite{pantom_1985, matlab-pantom}.Upon collecting 10-minute signals for feature extraction, signals determined to be 50\% or more noise were discarded.
-
+This larger dataset was reduced by selecting for individuals who had EHR, ECG, and arterial line data available. In this study, EHR data included labs, medications, hourly fluid output, and vital signs. Because poor signal quality can result in false alarms \cite{gambarotta_review_2016}, the ECG signal was reviewed automatically using Pan-Tompkins to identify QRS complexes \cite{pantom_1985, matlab-pantom}. Upon collecting 10-minute signals for feature extraction, signals determined to be 50\% or more noise were discarded.
 
 Change in qSOFA score was used to assign positive and negative classes for machine learning. Given an individual who meets one of the criteria for qSOFA, the model predicts whether their score will increase to $\geq$ 2, which Sepsis-3 deems as \quotes{likely to have poor outcomes} \cite{sepsis-3}. This increase in qSOFA is considered the positive outcome in a learning context, because the patient meets at least 2 qSOFA criteria as defined by Sepsis-3 after the prediction gap. Thus, the negative outcome is qSOFA $<$ 2 after the prediction gap.
 
-Prediction gaps of six and twelve hours were tested. For a six-hour gap, there were 202 negative and 59 positive cases. For a twelve-hour gap, there were 192 negative and 37 positive cases.
+Prediction gaps of six and twelve hours were tested. For a six-hour gap, there were (TODO: Get values) X negative and X positive cases. For a twelve-hour gap, there were X negative and X positive cases.
 
 \subsection{Signal Processing} \label{sec:methods_sigproc}
-For every sample, the 10 minutes of signal occurring directly before the prediction gap were isolated for processing. This 10-minute signal was divided into 2 5-minute windows, and then preprocessed according to Section \ref{sec:methods_art_data} or \ref{sec:methods_ecg_data}.
+For every sample, the 10 minutes of signal occurring directly before the prediction gap were isolated for processing. This 10-minute signal was divided into 2 5-minute windows, and then preprocessed according the relevant Section below.
 
 \subsubsection{Arterial Line Data} \label{sec:methods_art_data}
 Arterial line data was sampled at 120 Hz. A third order Butterworth bandpass filter with cutoff frequencies 1.25 and 25 Hz was applied to remove artifacts. \textit{BP\_Annotate} \cite{laurin_bp_annotate_2017} annotated the signal. The features extracted from the annotated signal are based on those from \cite{luo_severity_2012, hernandez_multimodal_2021}, and include: number of peaks, as well as the minimum, maximum, mean, median, and standard deviation (SD) of time between sequential systolic peaks, time between a systolic peak and its subsequent diastolic peak, relative amplitude between systolic peaks, and relative amplitude between a systolic peak and its subsequent diastolic peak.
@@ -107,6 +106,6 @@ For all methods, the training phase consisted of 3-fold cross-validation (3FCV) 
 
 A grid search selected optimal hyperparameters for each model using the validation fold in 3FCV. For RF, these hyperparameters included: number of trees, minimum leaf size, fraction of maximum number of splits, and number of predictors to sample. For SVM, grid search selected the best box constraint $C$ and kernel scale $\gamma$. Sequential minimal optimization \cite{JMLR:v6:fan05a} was used for the optimization routine. For LUCCK, grid search selected optimal $\Lambda$ and $\Theta$ parameters. All grid searches used F1 score as the value to optimize. 
 
-After reviewing results for the three models trained on EHR data, presented in Figure \ref{fig:ehrOnly}, analysis continued with RF, as it consistently produced higher mean Area under the Receiver Operating Characteristic Curve (AUROC) scores for 6 and 12 hours, and had smaller SDs for AUROC at 12 hours. 
+After reviewing results for the three models trained on EHR data, presented in Figure (TODO: Remove ehrOnly), analysis continued with RF, as it consistently produced higher mean Area under the Receiver Operating Characteristic Curve (AUROC) scores for 6 and 12 hours, and had smaller SDs for AUROC at 12 hours. 
 
 Different signal-feature based models were tested using tensor reduction and RF. The first, using only ECG data and presented in Figure \ref{fig:rf_ecgonly}, was the most restricted model, assuming that both EHR and arterial line data were unavailable. This would apply to patients recently admitted, who would not have lab values or other EHR data available, and is also minimally invasive compared to having an arterial line in place. Next, a model trained on both ECG and arterial line features, presented in Figure \ref{fig:rf_sigonly}, which was tested to determine if the invasive arterial line improved performance compared to only using ECG data. Lastly, a model trained on signal features alongside EHR data was built, presented in Figure \ref{fig:rf_sigEHR}.

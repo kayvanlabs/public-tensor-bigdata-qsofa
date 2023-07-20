@@ -4,39 +4,6 @@
 \usepackage{amsfonts}
 \usepackage{authblk}
 
-%% From elsarticle.tex
-%\usepackage[xcolor,qtwo]{elsarticle/rvdtx}
-%\usepackage{multicol}
-%\usepackage{color}
-%\usepackage{xspace}
-%usepackage{elsarticle/pdfwidgets}
-%\usepackage{enumerate}
-
-%\def\ttdefault{cmtt}
-
-%\headsep4pc
-
-%\makeatletter
-%\def\bs{\expandafter\@gobble\string\\}
-%\def\lb{\expandafter\@gobble\string\{}
-%\def\rb{\expandafter\@gobble\string\}}
-
-%\DeclareRobustCommand{\LaTeX}{L\kern-.26em%
-%        {\sbox\z@ T%
-%         \vbox to\ht\z@{\hbox{\check@mathfonts
-%           \fontsize\sf@size\z@
-%           \math@fontsfalse\selectfont
-%          A\,}%
-%         \vss}%
-%        }%
-%     \kern-.15em%
-%    \TeX}
-%\makeatother
-
-%\def\figurename{Clip}
-
-%\setcounter{tocdepth}{1}
-
 % Customization
 \usepackage{mathtools}
 \DeclarePairedDelimiterX{\norm}[1]{\lVert}{\rVert}{#1}  % to use '\norm'
@@ -45,6 +12,7 @@
 % Graphics
 \usepackage{graphicx}  % set up where images are stored
 \graphicspath{ {./body/figures/} }
+\usepackage{svg}
 
 % Tables
 \usepackage{tabularx}  % use tables with multi-line cells
@@ -58,7 +26,7 @@
 %\captionsetup[table]{position=bottom} 
 
 % Bibliography
-\usepackage[style=numeric-comp, sorting=none, maxnames=6, minnames=3]{biblatex}
+\usepackage[style=nature, sorting=none, maxnames=5, minnames=5]{biblatex}
 \addbibresource{sepsisLib.bib}
 \DeclareNameAlias{sortname}{given-family}
 %\bibliography{sepsisLib.bib}
@@ -82,34 +50,31 @@
     \section*{Abstract} \label{sec:abstract}
     \input{body/abstract}
     
-    \section*{Keywords} \label{sec:keywords}
-    \input{body/keywords}
-    
-    \section{Introduction} \label{sec:intro}
+    \section*{Introduction} \label{sec:intro}
     \input{body/introduction}
     
-    \section{Methodology} \label{sec:methods}
+    \section*{Methodology} \label{sec:methods}
     \input{body/methods}
     
-    \section{Results} \label{sec:results}
+    \section*{Results} \label{sec:results}
     \input{body/results}
     
-    \section{Discussion} \label{sec:discussion}
+    \section*{Discussion} \label{sec:discussion}
     \input{body/discussion}
     
-    \section{Conclusion} \label{sec:conclusion}
+    \section*{Conclusion} \label{sec:conclusion}
     \input{body/conclusion}
     
-    \section{Contributors}
+    \section*{Contributors}
     \input{body/contributions}
     
-    \section{Conflict of Interest Statement}
+    \section*{Conflict of Interest Statement}
     \input{body/declaration_interests}
     
-    \section{Role of the Funding Source}
+    \section*{Role of the Funding Source}
     \input{body/acknowledgements}
 
-    \section{Data Availability}
+    \section*{Data Availability}
     \input{body/dataAvailable}
     
     \printbibliography 

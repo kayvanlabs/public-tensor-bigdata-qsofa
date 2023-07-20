@@ -1,13 +1,5 @@
 %should only be 250 words
 
-\section*{Background}
-The quick sequential organ failure assessment (qSOFA) scoring system is a method to determine which individuals are at risk to progress to poor outcomes related to sepsis using minimal variables. 
-
-\section*{Methods}
-Support Vector Machine, Learning Using Concave and Convex Kernels, and Random Forest were the machine learning methods used to create predictions of increase in qSOFA score using electronic health record (EHR) data. Random Forest was selected for further analysis using waveform features extracted from electrocardiogram and arterial line. 
-
-\section*{Results}
-While a Random Forest model trained on EHR data alone can create adequate predictions in a 6-hour time frame (AUROC mean 0.781, standard deviation 0.113), a model trained on waveform features can create a similar prediction (AUROC mean 0.739, standard deviation 0.118). A model trained on waveform features is further improved when the data are structured as a tensor, and tensor decomposition via Canonical Polyadic / Parallel Factors with Alternating Least Squares (CP-ALS) is used to reduce the feature space (AUROC mean 0.753, standard deviation 0.116).
-
-\section*{Conclusion}
+The quick sequential organ failure assessment (qSOFA) scoring system is a method to determine which individuals are at risk to progress to poor outcomes related to sepsis using minimal variables. We used Support Vector Machine, Learning Using Concave and Convex Kernels, and Random Forest were the machine learning methods to predict an increase in qSOFA score using electronic health record (EHR) data, electrocardiogram, and/or arterial line.
+While a Random Forest model trained on EHR data alone can create adequate predictions in a 6-hour time frame (TODO: Add results), a model trained on waveform features can create a similar prediction (TODO: Add results). A model trained on waveform features is further improved when the data are structured as a tensor, and tensor decomposition via Canonical Polyadic / Parallel Factors with Alternating Least Squares (CP-ALS) is used to reduce the feature space (TODO: Add results).
 Despite a reduction in performance going from an EHR data-informed model to a tensor-reduced waveform data model, the waveform-informed model offers distinct advantages. The first advantage of a signal features-based model is that predictions can be made on a continuous basis in real-time, and second is that these predictions would not be limited by the availability of EHR data. Additionally, structuring the waveform features as a tensor conserves structural and temporal information that would otherwise be lost if the data were presented as flat vectors.

@@ -10,27 +10,27 @@
 %\end{figure}
 
 % About dataset
-\subsection{Dataset} \label{sec:methods_dataset}
+\subsection*{Dataset} \label{sec:methods_dataset}
 
 The retrospective dataset consisted of 1,803 unique individuals age $\geq$ 18 years with 3,516 unique encounters between 2013-2018 at Michigan Medicine. Individuals' characteristics are presented in Supplementary Table 1. The detailed inclusion/exclusion criteria for the dataset are provided in Supplementary Materials Section 1.4, but briefly, inclusion criteria selected for inpatient encounters with: ECG lead II waveforms at least 15 minutes in length and ICD9/10 codes for pneumonia, cellulitis, or urinary tract infection (UTI), excluding UTIs associated with catheters. Exclusion criteria included positive HIV status, solid organ or bone marrow transplant, and ongoing chemotherapy. These criteria created a dataset that did not specifically select for sepsis diagnosis, but instead focused on patients with an infection who were at risk to develop sepsis and septic shock. This dataset was selected from a Michigan Medicine biobank, whose data collection was approved by the institutional review board of University of Michigan. Informed consent was waived, as this was a retrospective study of previously collected and de-identified data, without direct involvement of human subjects and therefore no chance of physical harm or discomfort to the individuals being studied. Individuals reported their own sex and race/ethnicity, from categories defined by Michigan Medicine, and this information is included in Supplementary Table 1 to provide information on the population of this study.
 
 This larger dataset was reduced by selecting for individuals who had EHR, ECG, and arterial line data available. In this study, EHR data included labs, medications, hourly fluid output, and vital signs. Because poor signal quality can result in false alarms \cite{gambarotta_review_2016}, the ECG signal was reviewed automatically using Pan-Tompkins to identify QRS complexes \cite{pantom_1985, matlab-pantom}. Upon collecting 10-minute signals for feature extraction, signals determined to be 50\% or more noise were discarded.
 
-Change in qSOFA score was used to assign positive and negative classes for machine learning. Given an individual who meets one of the criteria for qSOFA, the model predicts whether their score will increase to $\geq$ 2, which Sepsis-3 deems as \quotes{likely to have poor outcomes} \cite{sepsis-3}. This increase in qSOFA is considered the positive outcome in a learning context, because the patient meets at least 2 qSOFA criteria as defined by Sepsis-3 after the prediction gap. Thus, the negative outcome is qSOFA $<$ 2 after the prediction gap.
+Change in qSOFA score was used to assign positive and negative classes for machine learning. Given an individual who meets one of the criteria for qSOFA, the model predicts whether the score will increase to $\geq$ 2, which Sepsis-3 deems as \quotes{likely to have poor outcomes} \cite{sepsis-3}. This increase in qSOFA is considered the positive outcome in a learning context, because the patient meets at least 2 qSOFA criteria as defined by Sepsis-3 after the prediction gap. Thus, the negative outcome is qSOFA $<$ 2 after the prediction gap.
 
-Prediction gaps of six and twelve hours were tested. For a six-hour gap, there were (TODO: Get values) X negative and X positive cases. For a twelve-hour gap, there were X negative and X positive cases.
+We tested prediction gaps of six and twelve hours. For a six-hour gap, there were (TODO: Get values) X negative and X positive cases. For a twelve-hour gap, there were X negative and X positive cases.
 
-\subsection{Signal Processing} \label{sec:methods_sigproc}
-For every sample, the 10 minutes of signal occurring directly before the prediction gap were isolated for processing. This 10-minute signal was divided into 2 5-minute windows, and then preprocessed according the relevant Section below.
+\subsection*{Signal Processing} \label{sec:methods_sigproc}
+For every sample, we collected the 10 minutes of signal occurring directly before the prediction gap for processing. This 10-minute signal was divided into 2 5-minute windows, and then preprocessed according the relevant Sections below.
 
-\subsubsection{Arterial Line Data} \label{sec:methods_art_data}
-Arterial line data was sampled at 120 Hz. A third order Butterworth bandpass filter with cutoff frequencies 1.25 and 25 Hz was applied to remove artifacts. \textit{BP\_Annotate} \cite{laurin_bp_annotate_2017} annotated the signal. The features extracted from the annotated signal are based on those from \cite{luo_severity_2012, hernandez_multimodal_2021}, and include: number of peaks, as well as the minimum, maximum, mean, median, and standard deviation (SD) of time between sequential systolic peaks, time between a systolic peak and its subsequent diastolic peak, relative amplitude between systolic peaks, and relative amplitude between a systolic peak and its subsequent diastolic peak.
+\subsubsection*{Arterial Line Data} \label{sec:methods_art_data}
+Arterial line data was sampled at 120 Hz. We applied a third order Butterworth bandpass filter with cutoff frequencies 1.25 and 25 Hz  to remove artifacts. The \textit{BP\_Annotate} software package \cite{laurin_bp_annotate_2017} annotated the signal. The features extracted from the annotated signal are based on those from \cite{luo_severity_2012, hernandez_multimodal_2021}, and include: number of peaks, as well as the minimum, maximum, mean, median, and standard deviation (SD) of time between sequential systolic peaks, time between a systolic peak and its subsequent diastolic reading, relative amplitude between systolic peaks, and relative amplitude between a systolic peak and its subsequent diastolic reading.
 
-\subsubsection{Electrocardiogram Data} \label{sec:methods_ecg_data}
+\subsubsection*{Electrocardiogram Data} \label{sec:methods_ecg_data}
 % About ECG, signal processing
-ECG data consisted of four leads and was sampled at 240 Hz. Following methods from \cite{belle_signal_2016}, only lead II of the ECG was used. A second order Butterworth bandpass filter with the cutoff frequencies 0.5 and 40 Hz was applied to remove noise and artifacts.
+ECG data consisted of four leads and was sampled at 240 Hz. Following methods from \cite{belle_signal_2016}, we only used lead II of the ECG. A second order Butterworth bandpass filter with the cutoff frequencies 0.5 and 40 Hz removed noise and artifacts.
 
-\subsubsection{Taut String} \label{sec:methods_ts}
+\subsubsection*{Taut String} \label{sec:methods_ts}
 Peak-based and statistical features were calculated from the Taut String (TS) estimation \cite{taut_string} of the ECG waveform. Others have previously used such features to detect hemodynamic instability \cite{belle_signal_2016} and predict hemodynamic decompensation \cite{hernandez_multimodal_2021, kim_prediction_2022}. TS estimation functions as follows. Given a discrete signal
 
 $f = (f_0, f_1, ..., f_n)$,
@@ -47,12 +47,12 @@ is minimal, with $D$ being the difference operator.
 
 TS estimation was applied to the filtered ECG signal using the five values of the parameter $\epsilon$, from \cite{hernandez_multimodal_2021}: 0.0100, 0.1575, 0.3050, 0.4525, and 0.6000. Six features were computed from each TS estimate of a 5-minute window and value of $\epsilon$. These features were: number of line segments, number of inflection segments, total variation of noise, total variation of denoised signal, power of denoised signal, and power of noise. This resulted in a tensor of size $2 \times 5 \times 6$ for each signal, where the modes of the tensor were window, $\epsilon$, feature. 
 
-\subsection{Electronic Health Record Data} \label{sec:methods_ehr}
-EHR features included lab data, medications administered, and other values. Labs and cardiovascular infusions were assigned an ordinal encoding with a score from 1-4 or 1-3, respectively. A lower score indicated less severity and higher score, more severity. The Supplementary Materials Section 1.2 provides tables detailing these assignments. Vital signs and urine output were included, but not given an ordinal encoding. 
+\subsection*{Electronic Health Record Data} \label{sec:methods_ehr}
+We assigned an ordinal encoding to labs and cardiovascular infusions ranging from 0-4 or 0-3, respectively. A score of 1 indicates less severity and a score of 3 or 4, more severity. If a lab value had been recorded before the time of interest, this value was carried forward. We assigned a score of 0 to represent a missing value with no previous recordings. The Supplementary Materials Section 1.2 provides tables detailing these assignments. Vital signs and urine output were included, but not given an ordinal encoding. If vital signs or urine output were not reported in the time of interest, we carried forward the most recent known value.
 
-A retrospective component was added for lab values, medication, and vital signs where, in addition to the 10 minutes occurring before the prediction gap, four look-back periods are included. For a prediction gap of 6 hours, these look-back periods are increments of 4 hours; for a prediction gap of 12 hours, they are increments of 8 hours.
+We added a retrospective component for lab values, cardiovascular infusions, and vital signs where, in addition to the 10 minutes occurring before the prediction gap, we include four look-back periods. For the prediction gap of 6 hours, these look-back periods are increments of 4 hours; for the prediction gap of 12 hours, they are increments of 8 hours.
 
-\subsection{Feature Reduction with Tensor Methods} \label{sec:methods_tensor}
+\subsection*{Feature Reduction with Tensor Methods} \label{sec:methods_tensor}
 
 For each 10-minute ECG signal, 60 features were computed and arranged as a tensor of size $2\times5\times6$. For each 10-minute arterial line signal, 42 features were arranged as a tensor of size $2\times1\times21$, where the second mode, TS parameter $\epsilon$, was inflated to create a uniform presentation to the tensor reduction algorithms. Rather than treating this information as 60 or 42 feature vectors, we preserved the underlying tensor structure by using a tensor-based dimensionality reduction method, inspired by \cite{hernandez_multimodal_2021} and described below.
 
@@ -80,7 +80,7 @@ The vectors $a_1,\dots,a_r\in\mathbb{R}^{n_1}$, and so on, can be combined to fo
 \begin{equation*}
     X_{(1)} \approx A \left( D \odot C \odot B \right)^{\top}
 \end{equation*}
-where $\odot$ denotes the Khatri--Rao product for the first mode. Because finding a CP decomposition is NP-hard \cite{hillar_most_2013}, the Alternating Least Squares (ALS) heuristic method was used, which is an iterative algorithm to find the best approximation of $X$ for a given rank $r$ \cite{kolda_tensors}.
+where $\odot$ denotes the Khatri--Rao product for the first mode. Because finding a CP decomposition is NP-hard \cite{hillar_most_2013}, we used the Alternating Least Squares (ALS) heuristic method, which is an iterative algorithm to find the best approximation of $X$ for a given rank $r$ \cite{kolda_tensors}.
 
 The dataset was divided into an 75/25 split 100 times, and tensor reduction was performed on each of those splits. A fit score, defined as
 \begin{equation*}
@@ -97,15 +97,13 @@ With this process completed, for any given individual's third-order tensor $T$, 
 \end{equation*}
 is minimal. After computing the individual vectors, they were concatenated to create $C_T$, a feature matrix with a reduced set of features compared to matricization $T_{(3)}$ of the original tensor $T$ along the third mode.
 
-\subsection{Machine Learning} \label{sec:methods_ml}
+\subsection*{Machine Learning} \label{sec:methods_ml}
 When constructing training and test datasets, 75/25 splits were created based on individuals so that no individual would overlap between the training and test sets.
 
-After extracting the EHR features described in Section \ref{sec:methods_ehr}, the learning models Support Vector Machines (SVM) \cite{cortes_support-vector_1995}, Random Forest (RF) \cite{breiman_random_2001}, and Learning Using Concave and Convex Kernels (LUCCK) \cite{sabeti_learning_2019} were trained.
+After extracting features, the three types of learning models used for training were Support Vector Machines (SVM) \cite{cortes_support-vector_1995}, Random Forest (RF) \cite{breiman_random_2001}, and Learning Using Concave and Convex Kernels (LUCCK) \cite{sabeti_learning_2019}.
 
-For all methods, the training phase consisted of 3-fold cross-validation (3FCV) on a 75/25 split of the data, where the test set was held and not used for training. The test set was presented to the three models generated from 3FCV, and three sets of prediction scores were generated as a result. The final prediction scores for the test set were created by taking the median of those three sets of scores, a voting system. This process was repeated 100 times to obtain a SD for model performance. 
+For all methods, the training phase consisted of 3-fold cross-validation (3FCV) on a 75/25 split of the data, where the test set was held and not used for training. The test set was presented to the three models generated from 3FCV to produce three sets of prediction scores. We computed the final prediction scores for the test set by taking the median of the three prediction scores, thus creating a voting system. This process was repeated 100 times to obtain mean and standard deviation values of model performance. 
 
 A grid search selected optimal hyperparameters for each model using the validation fold in 3FCV. For RF, these hyperparameters included: number of trees, minimum leaf size, fraction of maximum number of splits, and number of predictors to sample. For SVM, grid search selected the best box constraint $C$ and kernel scale $\gamma$. Sequential minimal optimization \cite{JMLR:v6:fan05a} was used for the optimization routine. For LUCCK, grid search selected optimal $\Lambda$ and $\Theta$ parameters. All grid searches used F1 score as the value to optimize. 
 
-After reviewing results for the three models trained on EHR data, presented in Figure (TODO: Remove ehrOnly), analysis continued with RF, as it consistently produced higher mean Area under the Receiver Operating Characteristic Curve (AUROC) scores for 6 and 12 hours, and had smaller SDs for AUROC at 12 hours. 
-
-Different signal-feature based models were tested using tensor reduction and RF. The first, using only ECG data and presented in Figure \ref{fig:rf_ecgonly}, was the most restricted model, assuming that both EHR and arterial line data were unavailable. This would apply to patients recently admitted, who would not have lab values or other EHR data available, and is also minimally invasive compared to having an arterial line in place. Next, a model trained on both ECG and arterial line features, presented in Figure \ref{fig:rf_sigonly}, which was tested to determine if the invasive arterial line improved performance compared to only using ECG data. Lastly, a model trained on signal features alongside EHR data was built, presented in Figure \ref{fig:rf_sigEHR}.
+Different signal feature based models were tested using tensor reduction. The first, using only ECG data and presented in Figure \ref{fig:rf_ecgonly}, was the most restricted model, assuming that both EHR and arterial line data were unavailable. This would apply to patients recently admitted, who would not have lab values or other EHR data available, and is also minimally invasive compared to having an arterial line in place. Next, a model trained on both ECG and arterial line features, presented in Figure \ref{fig:rf_sigonly}, which was tested to determine if the invasive arterial line improved performance compared to only using ECG data. Lastly, a model trained on signal features alongside EHR data was built, presented in Figure \ref{fig:rf_sigEHR}.

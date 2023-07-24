@@ -19,6 +19,7 @@
 *.jpg
 *.fig
 *.png
+GeneratePlots/*.eps
 
 # Testing
 arterial/code_tests/*

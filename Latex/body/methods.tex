@@ -80,7 +80,7 @@ The vectors $a_1,\dots,a_r\in\mathbb{R}^{n_1}$, and so on, can be combined to fo
 \begin{equation*}
     X_{(1)} \approx A \left( D \odot C \odot B \right)^{\top}
 \end{equation*}
-where $\odot$ denotes the Khatri--Rao product for the first mode. Because finding a CP decomposition is NP-hard \cite{hillar_most_2013}, we used the Alternating Least Squares (ALS) heuristic method, which is an iterative algorithm to find the best approximation of $X$ for a given rank $r$ \cite{kolda_tensors}.
+where $\odot$ denotes the Khatri-Rao product for the first mode. Because finding a CP decomposition is NP-hard \cite{hillar_most_2013}, we used the Alternating Least Squares (ALS) heuristic method, which is an iterative algorithm to find the best approximation of $X$ for a given rank $r$ \cite{kolda_tensors}.
 
 The dataset was divided into an 75/25 split 100 times, and tensor reduction was performed on each of those splits. A fit score, defined as
 \begin{equation*}

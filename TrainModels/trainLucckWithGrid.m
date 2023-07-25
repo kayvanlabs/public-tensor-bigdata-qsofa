@@ -74,9 +74,18 @@ function [results, lucckModel, maxRow] = trainLucck(dataTrain, dataValid, labels
     row2Insert = 1;
     for iLambda = 1:nLambda
         for jTheta = 1:nTheta
-            Mdl = LUCCK(dataTrain, labelsTrainChar, classes, ...
-                        params.lambda(iLambda), params.theta(jTheta), ...
-                        trainWeight);
+            % Call LUCCK application
+            trainFile.trainData = dataTrain;
+            trainFile.trainClass = labelsTrainChar;
+            trainFile.classes = classes;
+            trainFile.Lambda = params.lambda(iLambda);
+            trainFile.Theta = params.theta(jTheta);
+            trainFile.trainWeight = trainWeight;
+            save('trainTemp.mat', 'trainFile');
+            !LUCCKstandaloneApplication\LUCCK trainTemp.mat
+            Mdl = load('tempLUCCK.mat');
+            Mdl = Mdl.obj;
+            
             results(row2Insert) = createResults(Mdl, dataValid, labelsValid);
             if results(row2Insert).(metricToGrade) > maxMetric || (row2Insert == (nLambda * nTheta))
                 lucckModel = Mdl;

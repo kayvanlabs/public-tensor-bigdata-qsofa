@@ -36,25 +36,43 @@ classdef LUCCK
     methods
         %% Constructor
         function obj = LUCCK(trainData, trainClass, classes, Lambda, Theta, trainWeight)
-            if nargin < 5
+            % If being called from executable, read the 1 argument (path to
+            % data), else, parse all arguments given
+            if nargin == 1 
+                try
+                    fFile = load(trainData);
+                    fFile = fFile.trainFile;
+                    obj.trainData = fFile.trainData;
+                    obj.trainClass = fFile.trainClass;
+                    obj.classes = fFile.classes;
+                    obj.Lambda = fFile.Lambda;
+                    obj.Theta = fFile.Theta;
+                    obj.trainWeight = fFile.trainWeight;
+                catch ME
+                    disp(ME.message)
+                    error('Unable to complete LUCCK training')
+                end
+            elseif nargin < 5
                 error('Not enough input arguments provided')
+            else
+                % assign properties
+                obj.trainData = trainData;
+                obj.trainClass = trainClass;
+                obj.classes = classes;
+                obj.Lambda = Lambda;
+                obj.Theta = Theta;
+                
+                if nargin == 6
+                    obj.trainWeight = trainWeight;
+                else  % if weights not provided, assume equal weights
+                    obj.trainWeight = ones(size(trainData, 1), 1);
+                end
+                
             end 
-            
-            % assign properties
-            obj.trainData = trainData;
-            obj.trainClass = trainClass;
-            obj.classes = classes;
-            obj.Lambda = Lambda;
-            obj.Theta = Theta;
-            
-            if nargin == 6
-                obj.trainWeight = trainWeight;
-            else  % if weights not provided, assume equal weights
-                obj.trainWeight = ones(size(trainData, 1), 1);
-            end
             
             % Build the model
             obj = build_lucck(obj);
+            save('tempLUCCK.mat', 'obj');
         end
         
         % Building the LUCCK model

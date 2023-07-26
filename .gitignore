@@ -1,6 +1,7 @@
 # Temp files
 *.asv
 .DS_Store
+*.Rhistory
 
 # Data files
 *.csv

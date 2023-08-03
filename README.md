@@ -1,6 +1,11 @@
 # Continuous Sepsis Trajectory Prediction using Tensor-Reduced Physiological Signals
 Code for predicting change in qSOFA using features extracted from physiological signals and/or electronic health record data.
 
+## To run the script:  
+Operate from the main branch and use runSOFApipeline.m  
+Specify directories within the config.json file.  
+Once tensor decomposition has been completed, navigate to TrainModels and use callBasicMITrainingWithMI.m to train your model of choice.
+
 ## Contributors
 The following members of BCIL contributed to or wrote the code included in this repository (listed in alphabetical order):  
 [Olivia P. Alge](https://github.com/olialgeUMICH)  
@@ -12,7 +17,7 @@ The following members of BCIL contributed to or wrote the code included in this 
 [Alexander Wood](https://github.com/alexanderwood)  
 [Winston Zhang](https://github.com/winstonwzhang)  
 
-And we acknowledge the following people who influcened the code written with their advice, review, and other work:
+And we acknowledge the following people who influcened the code written with their advice, review, and other work:  
 [Renaid Kim](https://github.com/renaidkim)  
 [Kayvan Najarian](https://najarianlab.ccmb.med.umich.edu/)  
 [Neriman Tokcan](https://github.com/nerimantokcan)  

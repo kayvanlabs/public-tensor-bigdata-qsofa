@@ -1,0 +1,83 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{authblk}
+\usepackage{afterpage}
+\usepackage{pdflscape}
+
+% Customization
+\usepackage{mathtools}
+\DeclarePairedDelimiterX{\norm}[1]{\lVert}{\rVert}{#1}  % to use '\norm'
+\newcommand{\quotes}[1]{``#1''}  % for quotes
+
+% Graphics
+\usepackage{graphicx}  % set up where images are stored
+\graphicspath{ {./body/figures/} }
+\usepackage{svg}
+
+% Tables
+\usepackage{tabularx}  % use tables with multi-line cells
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\usepackage{makecell}
+
+% For captions
+\usepackage{caption}
+\usepackage{subcaption}
+%\captionsetup[table]{position=bottom} 
+
+% Bibliography
+\usepackage[style=nature, backend=biber, sorting=none, maxnames=5, minnames=1, date=year, autocite=superscript]{biblatex}
+\addbibresource{sepsisLib.bib}
+\DeclareNameAlias{sortname}{given-family}
+%\bibliography{sepsisLib.bib}
+
+
+\title{Continuous Sepsis Trajectory Prediction using Tensor-Reduced Physiological Signals}
+\input{body/authors}
+\date{}
+
+% some stuff for author affiliation script to work properly
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+% Start of document
+\begin{document}
+
+    \maketitle
+    
+    \clearpage
+    
+    \section*{Abstract} \label{sec:abstract}
+    \input{body/abstract}
+    
+    \section*{Introduction} \label{sec:intro}
+    \input{body/introduction}
+    
+    \section*{Methodology} \label{sec:methods}
+    \input{body/methods}
+    
+    \section*{Results} \label{sec:results}
+    \input{body/results}
+    
+    \section*{Discussion} \label{sec:discussion}
+    \input{body/discussion}
+    
+    \section*{Conclusion} \label{sec:conclusion}
+    \input{body/conclusion}
+    
+    \section*{Contributors}
+    \input{body/contributions}
+    
+    \section*{Conflict of Interest Statement}
+    \input{body/declaration_interests}
+    
+    \section*{Acknowledgements}
+    \input{body/acknowledgements}
+
+    \input{body/resultsTables}
+    
+    \printbibliography 
+
+\end{document}

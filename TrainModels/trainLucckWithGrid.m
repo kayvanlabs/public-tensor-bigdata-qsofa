@@ -82,7 +82,7 @@ function [results, lucckModel, maxRow] = trainLucck(dataTrain, dataValid, labels
             trainFile.Theta = params.theta(jTheta);
             trainFile.trainWeight = trainWeight;
             save('trainTemp.mat', 'trainFile');
-            !LUCCKstandaloneApplication\LUCCK trainTemp.mat
+            !LUCCK\LUCCK trainTemp.mat
             Mdl = load('tempLUCCK.mat');
             Mdl = Mdl.obj;
             

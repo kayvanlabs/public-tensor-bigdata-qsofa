@@ -81,9 +81,9 @@ function [results, lucckModel, maxRow] = trainLucck(dataTrain, dataValid, labels
             trainFile.Lambda = params.lambda(iLambda);
             trainFile.Theta = params.theta(jTheta);
             trainFile.trainWeight = trainWeight;
-            save('trainTemp.mat', 'trainFile');
+            save('LUCCK\trainTemp.mat', 'trainFile');
             !LUCCK\LUCCK trainTemp.mat
-            Mdl = load('tempLUCCK.mat');
+            Mdl = load('LUCCK\tempLUCCK.mat');
             Mdl = Mdl.obj;
             
             results(row2Insert) = createResults(Mdl, dataValid, labelsValid);

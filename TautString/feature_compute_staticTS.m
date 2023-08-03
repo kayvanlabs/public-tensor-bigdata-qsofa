@@ -42,7 +42,11 @@ function  [features, names, tautStrings] = feature_compute_staticTS(hrv, widths)
     % Calculate / extract features for each value of epsilon
     for i=1:m
         epsilon = widths(i);
-        [hrv_denoised,hrv_bends_signal]=taut_string(hrv,epsilon);
+        save('TautString\tempInput.mat', 'hrv', 'epsilon');
+        !TautString\taut_string TautString\tempInput.mat
+        ts_results = load('TautString\tempOutput.mat');
+        hrv_denoised = ts_results.b;
+        hrv_bends_signal = ts_results.c;
         tautStrings(i,:) = hrv_denoised;
 %         plot_hrv_tautstring(hrv, hrv_denoised, epsilon);
         hrv_bends = hrv_bends_signal(find(abs(hrv_bends_signal)));

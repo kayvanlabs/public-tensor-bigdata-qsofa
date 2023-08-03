@@ -13,10 +13,6 @@
 %                       each tensor
 %       5. num_windows: the number of windows in each tensor
 %       6. epsilons: the epsilon values used for feature extraction
-%       7. balanced: this parameter is set to determine if the data need to
-%                    rebalanced. If set true, it is hard coded for a
-%                    specific data set (CWR), so you should probably leave
-%                    it as false.
 %   
 %   Joshua Pickard (jpic@umich.edu)
 

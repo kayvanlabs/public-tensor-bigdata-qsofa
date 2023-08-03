@@ -108,5 +108,8 @@ A grid search selected optimal hyperparameters for each model using the validati
 
 Different signal feature based models were tested using tensor reduction. The first, using only ECG data and presented in Figure \ref{fig:ecgonly}, was the most restricted model, assuming that both EHR and arterial line data were unavailable. This would apply to patients recently admitted, who would not have lab values or other EHR data available, and is also minimally invasive compared to having an arterial line in place. Next, a model trained on both ECG and arterial line features, presented in Figure \ref{fig:sigonly}, which was tested to determine if the invasive arterial line improved performance compared to only using ECG data. Lastly, a model trained on signal features alongside EHR data was built, presented in Figure \ref{fig:sigEHR}.
 
-\subsection{Code Availability}
-The underlying code for this study is available in on GitHub and can be accessed via this link: https://github.com/kayvanlabs/public-tensor-bigdata-qsofa. Our repository does not provide libraries created by others as to not violate their licenses. Additionally, the source code of LUCCK and Taut String methods cannot be shared due to proprietary reasons, but standalone Matlab executables are made available in the GitHub repository.
+\subsection*{Data Availability}
+\input{body/dataAvailable}
+
+\subsection*{Code Availability}
+The underlying code for this study is available in on GitHub and can be accessed via this link: \url{https://github.com/kayvanlabs/public-tensor-bigdata-qsofa}. Our repository does not provide libraries created by others as to not violate their licenses. Additionally, the source code of LUCCK and Taut String methods cannot be shared due to proprietary reasons, but standalone Matlab executables are made available in the repository.

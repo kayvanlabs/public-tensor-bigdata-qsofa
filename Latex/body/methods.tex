@@ -24,11 +24,11 @@ We tested prediction gaps of six and twelve hours. For a six-hour gap, there wer
 For every sample, we collected the 10 minutes of signal occurring directly before the prediction gap for processing. This 10-minute signal was divided into 2 5-minute windows, and then preprocessed according the relevant sections below.
 
 \subsubsection*{Arterial Line Data} \label{sec:methods_art_data}
-Arterial line data was sampled at 120 Hz. We applied a third order Butterworth bandpass filter with cutoff frequencies 1.25 and 25 Hz  to remove artifacts. The \textit{BP\_Annotate} software package \autocite{laurin_bp_annotate_2017} annotated the signal. Following previous methodology, \autocite{luo_severity_2012, hernandez_multimodal_2021}, we extract features from the annotated signal: number of peaks, as well as the minimum, maximum, mean, median, and standard deviation (SD) of time between sequential systolic peaks, time between a systolic peak and its subsequent diastolic reading, relative amplitude between systolic peaks, and relative amplitude between a systolic peak and its subsequent diastolic reading.
+Arterial line signals were sampled at 120 Hz. We applied a third order Butterworth bandpass filter with cutoff frequencies 1.25 and 25 Hz  to remove artifacts. The \textit{BP\_Annotate} software package \autocite{laurin_bp_annotate_2017} annotated the signal. Following previous methodology, \autocite{luo_severity_2012, hernandez_multimodal_2021}, we extract features from the annotated signal: number of peaks, as well as the minimum, maximum, mean, median, and standard deviation (SD) of time between sequential systolic peaks, time between a systolic peak and its subsequent diastolic reading, relative amplitude between systolic peaks, and relative amplitude between a systolic peak and its subsequent diastolic reading.
 
 \subsubsection*{Electrocardiogram Data} \label{sec:methods_ecg_data}
 % About ECG, signal processing
-ECG data consisted of four leads and was sampled at 240 Hz. We used lead II of the ECG, following previously established methods \autocite{belle_signal_2016}. A second order Butterworth bandpass filter with the cutoff frequencies 0.5 and 40 Hz removed noise and artifacts.
+ECG data consisted of four leads and signals were sampled at 240 Hz. We used lead II of the ECG, following previously established methods \autocite{belle_signal_2016}. A second order Butterworth bandpass filter with the cutoff frequencies 0.5 and 40 Hz removed noise and artifacts.
 
 \subsubsection*{Taut String} \label{sec:methods_ts}
 Peak-based and statistical features were calculated from the Taut String (TS) estimation \autocite{taut_string} of the ECG waveform. Others have previously used such features to detect hemodynamic instability \autocite{belle_signal_2016} and predict hemodynamic decompensation \autocite{hernandez_multimodal_2021, kim_prediction_2022}. TS estimation functions as follows. Given a discrete signal
@@ -100,7 +100,7 @@ is minimal. After computing the individual vectors, they were concatenated to cr
 \subsection*{Machine Learning} \label{sec:methods_ml}
 When constructing training and test datasets, 75/25 splits were created based on individuals so that no individual would overlap between the training and test sets.
 
-After extracting features, the three types of learning models used for training were Support Vector Machines (SVM) \autocite{cortes_support-vector_1995}, Random Forest (RF) \autocite{breiman_random_2001}, and Learning Using Concave and Convex Kernels (LUCCK) \autocite{sabeti_learning_2019}.
+After extracting features, the three types of learning models used for training were linear Support Vector Machines (SVM) \autocite{cortes_support-vector_1995}, Random Forest (RF) \autocite{breiman_random_2001}, and Learning Using Concave and Convex Kernels (LUCCK) \autocite{sabeti_learning_2019}. We opted not to use deep learning models because we wanted to offer transparency to the end user of the model. 
 
 For all methods, the training phase consisted of 3-fold cross-validation (3FCV) on a 75/25 split of the data, where the test set was held and not used for training. The test set was presented to the three models generated from 3FCV to produce three sets of prediction scores. We computed the final prediction scores for the test set by taking the median of the three prediction scores, thus creating a voting system. This process was repeated 100 times to obtain mean and standard deviation values of model performance. 
 
@@ -112,4 +112,4 @@ Different signal feature based models were tested using tensor reduction. The fi
 \input{body/dataAvailable}
 
 \subsection*{Code Availability}
-The underlying code for this study is available in on GitHub and can be accessed via this link: \url{https://github.com/kayvanlabs/public-tensor-bigdata-qsofa}. Our repository does not provide libraries created by others as to not violate their licenses. Additionally, the source code of LUCCK and Taut String methods cannot be shared due to proprietary reasons, but standalone Matlab executables are made available in the repository.
+The underlying code for this study is available on GitHub and can be accessed via this link: \url{https://github.com/kayvanlabs/public-tensor-bigdata-qsofa}. Our repository does not provide libraries created by others as to not violate their licenses. Additionally, the source code of LUCCK and Taut String methods cannot be shared due to proprietary reasons, but standalone Matlab executables are made available in the repository.
